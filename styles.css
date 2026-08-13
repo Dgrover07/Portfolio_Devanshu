@@ -209,9 +209,9 @@ nav a:hover::after, nav a.active::after {
   height: 8px;
   background: var(--emerald);
   border-radius: 50%;
-  box-shadow: 0 0 12px var(--emerald);
+  box-shadow: 0 0 12px var(--emerald), 0 0 24px rgba(16, 185, 129, 0.4);
   margin-right: 8px;
-  animation: pulse 2.2s ease-in-out infinite;
+  animation: pulse-glow 2.2s ease-in-out infinite;
 }
 
 .hero h1 {
@@ -225,11 +225,18 @@ nav a:hover::after, nav a.active::after {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer 8s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.3));
+  transition: filter 0.3s ease;
+}
+
+.hero h1:hover {
+  filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.6));
 }
 
 .hero h1 i {
   font-style: normal;
   -webkit-text-fill-color: var(--gold2);
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
 }
 
 .role {
@@ -254,19 +261,38 @@ nav a:hover::after, nav a.active::after {
 
 .btn {
   display: inline-block;
-  border: 1px solid var(--line-light);
-  padding: 13px 20px;
+  border: 1.5px solid var(--line-light);
+  padding: 13px 24px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.3), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold);
+  transform: translateY(-3px);
+  border-color: var(--gold2);
   color: var(--gold2);
-  box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 240, 255, 0.25), 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+.btn:hover::before {
+  opacity: 1;
 }
 
 .btn.primary {
@@ -278,7 +304,7 @@ nav a:hover::after, nav a.active::after {
 
 .btn.primary:hover {
   background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
-  box-shadow: 0 8px 30px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 15px 50px rgba(56, 189, 248, 0.4), 0 0 30px rgba(0, 240, 255, 0.3);
   color: #070a12;
 }
 
@@ -291,22 +317,25 @@ nav a:hover::after, nav a.active::after {
 
 .links a {
   position: relative;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  padding: 4px 0;
 }
 
 .links a::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: 0;
   left: 0;
   width: 0;
-  height: 1px;
-  background: var(--gold2);
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold2), var(--gold));
   transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
 }
 
 .links a:hover {
   color: var(--gold2);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
 }
 
 .links a:hover::after {
@@ -317,17 +346,33 @@ nav a:hover::after, nav a.active::after {
    TERMINAL (CYBER SECURITY LAB)
    ═══════════════════════════════════════ */
 .terminal {
-  border: 1px solid #1e293b;
-  background: #090d16;
-  border-radius: 8px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.05);
+  border: 1.5px solid rgba(56, 189, 248, 0.2);
+  background: linear-gradient(135deg, #090d16 0%, #0d1423 100%);
+  border-radius: 10px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.1);
   overflow: hidden;
-  transition: box-shadow 0.5s ease, border-color 0.5s ease;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.terminal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  border-radius: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .terminal:hover {
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7), 0 0 50px rgba(56, 189, 248, 0.25);
+}
+
+.terminal:hover::before {
+  opacity: 1;
 }
 
 .term-head {
@@ -346,11 +391,18 @@ nav a:hover::after, nav a.active::after {
   opacity: 0.7;
 }
 
-.term-head span:nth-child(1) { color: #ef4444; }
-.term-head span:nth-child(2) { color: #f59e0b; }
+.term-head span:nth-child(1) { color: #ef4444; animation: pulse 2s ease-in-out infinite; }
+.term-head span:nth-child(2) { color: #f59e0b; animation: pulse 2.2s ease-in-out infinite 0.1s; }
+.term-head span:nth-child(3) { color: #10b981; animation: pulse 2.4s ease-in-out infinite 0.2s; }
 .term-head span:nth-child(3) { color: #10b981; }
 
 .term-head em {
+  color: var(--gold2);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  font-style: normal;
+}
+
+.terminal em {
   margin-left: auto;
   font: 11px 'DM Mono', monospace;
   font-style: normal;
@@ -1636,6 +1688,16 @@ footer a:hover {
   100% { opacity: 1; transform: scale(1); }
 }
 
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px var(--emerald), 0 0 24px rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 20px var(--emerald), 0 0 40px rgba(16, 185, 129, 0.6); }
+}
+
+@keyframes scroll-indicator {
+  0%, 100% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(6px); }
+}
+
 @media(prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1646,4 +1708,37 @@ footer a:hover {
     opacity: 1;
     transform: none;
   }
+}
+
+/* ═══════════════════════════════════════
+   SCROLL-DOWN INDICATOR
+   ═══════════════════════════════════════ */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 40px;
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.scroll-indicator:hover {
+  border-color: rgba(56, 189, 248, 0.8);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+  opacity: 1;
+}
+
+.scroll-indicator span {
+  color: var(--gold2);
+  font-size: 18px;
+  animation: scroll-indicator 2s ease-in-out infinite;
+  display: block;
 }
