@@ -89,9 +89,35 @@
     <h2>Security projects</h2>
     <p>Hands-on labs across SIEM monitoring, adversary telemetry, and threat investigation.</p>
   </div>
+
+  <div class="stats-dashboard reveal">
+    <div class="stat-card">
+      <div class="stat-number" data-count="141">0</div>
+      <div class="stat-label">Threat Events</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" data-count="1601">0</div>
+      <div class="stat-label">DoublePulsar Alerts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" data-count="57">0</div>
+      <div class="stat-label">Unique Attackers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" data-count="4">0</div>
+      <div class="stat-label">Critical CVEs</div>
+    </div>
+  </div>
+
+  <div class="filter-tags reveal delay">
+    <button class="filter-tag active" data-filter="all">All Projects</button>
+    <button class="filter-tag" data-filter="siem">SIEM & Monitoring</button>
+    <button class="filter-tag" data-filter="honeypot">Honeypots & Telemetry</button>
+    <button class="filter-tag" data-filter="investigation">Investigation & Forensics</button>
+  </div>
   
   <div class="project-grid reveal stagger">
-    <article class="project" data-project="home-siem-lab">
+    <article class="project" data-project="home-siem-lab" data-filter="siem">
       <div class="project-header">
         <small>01 · SIEM & LOGGING</small>
         <span class="badge ok">LIVE LAB</span>
@@ -115,7 +141,7 @@
       </div>
     </article>
 
-    <article class="project" data-project="honeypot-dashboard">
+    <article class="project" data-project="honeypot-dashboard" data-filter="honeypot">
       <div class="project-header">
         <small>02 · ADVERSARY TELEMETRY</small>
         <span class="badge ok">ACTIVE HONEYPOT</span>
@@ -138,7 +164,7 @@
       </div>
     </article>
 
-    <article class="project" data-project="phishing-osint">
+    <article class="project" data-project="phishing-osint" data-filter="investigation">
       <div class="project-header">
         <small>03 · THREAT INVESTIGATION</small>
         <span class="badge">ANALYSIS</span>
@@ -162,7 +188,7 @@
       </div>
     </article>
 
-    <article class="project" data-project="tpot-soc-assessment">
+    <article class="project" data-project="tpot-soc-assessment" data-filter="honeypot">
       <div class="project-header">
         <small>04 · SOC THREAT INTELLIGENCE</small>
         <span class="badge alert">THREAT TELEMETRY</span>

@@ -219,6 +219,59 @@ const sectionObserver = new IntersectionObserver(
 );
 sections.forEach(s => sectionObserver.observe(s));
 
+/* ── Animated stat counters ── */
+function animateStats() {
+  const statNumbers = document.querySelectorAll('.stat-number');
+  const observerStats = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.count);
+        let current = 0;
+        const increment = Math.ceil(target / 50);
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            el.textContent = target;
+            clearInterval(timer);
+          } else {
+            el.textContent = current;
+          }
+        }, 30);
+        observerStats.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  statNumbers.forEach(el => observerStats.observe(el));
+}
+
+/* ── Project filtering ── */
+function setupProjectFilters() {
+  const filterTags = document.querySelectorAll('.filter-tag');
+  const projects = document.querySelectorAll('.project-grid .project');
+  
+  filterTags.forEach(tag => {
+    tag.addEventListener('click', () => {
+      filterTags.forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+      
+      const filter = tag.dataset.filter;
+      projects.forEach(project => {
+        if (filter === 'all' || project.dataset.filter === filter) {
+          project.classList.remove('hidden');
+          project.style.animation = 'none';
+          setTimeout(() => {
+            project.style.animation = '';
+          }, 10);
+        } else {
+          project.classList.add('hidden');
+        }
+      });
+    });
+  });
+}
+
 /* ── Subtle header border glow on scroll ── */
 let ticking = false;
 window.addEventListener('scroll', () => {
@@ -233,4 +286,6 @@ window.addEventListener('scroll', () => {
   }
 });
 
+animateStats();
+setupProjectFilters();
 renderProjectDetail();
