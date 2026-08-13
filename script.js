@@ -53,16 +53,56 @@ const projectData = {
     category: '04 · SOC THREAT INTELLIGENCE',
     name: 'T-Pot Multi-Honeypot SOC Threat Intelligence Assessment',
     summary: 'Deployed an enterprise-scale multi-honeypot SOC environment using T-Pot and Suricata NIDS to capture, analyze and investigate real-world threat telemetry across 141 attack events.',
-    description: 'This comprehensive SOC project applied the 6-phase threat intelligence lifecycle: from infrastructure deployment through detection, analysis, and defensive recommendations. Using T-Pot v24.04 (Cowrie, Dionaea, RDPHoneypot, Tanner, Ciscoasa) and Suricata NIDS, I captured and analyzed real-world attack patterns including Telnet credential sweeps, SMB exploitation attempts, RDP DoS attacks, and backdoor installation signatures. The analysis identified top threat CVEs (CVE-2012-0152), threat actors by autonomous system, and actionable defensive controls.',
+    description: `This comprehensive SOC project applied the 6-phase threat intelligence lifecycle across deployment, collection, detection, analysis, findings, and defensive recommendations.
+
+INFRASTRUCTURE & DEPLOYMENT (Phase 1):
+Deployed T-Pot v24.04 on Ubuntu 22.04 LTS with 6 containerized honeypot daemons:
+• Cowrie (SSH/Telnet): Captured brute-force authentication & malware binary drops
+• Dionaea (SMB/Port 445): Trapped SMB exploits (MS17-010 / EternalBlue, DoublePulsar)
+• RDPHoneypot (Port 3389): Emulated Windows RDP to capture credential spraying & DoS
+• Tanner & H0neytr4p (Ports 80/443): Dynamic web honeypots for vulnerability scanning
+• Ciscoasa (Port 500): VPN exploit detection for Cisco ASA simulation
+• Suricata NIDS: Real-time network intrusion detection with Emerging Threats rulesets
+
+COLLECTION & NORMALIZATION (Phase 2):
+Ingested honeypot logs into Elastic Stack (Filebeat → Logstash → Elasticsearch):
+• Standardized logs to Elastic Common Schema (ECS) with normalized fields
+• GeoIP & ASN enrichment via MaxMind GeoLite2 for geographic attribution
+• 30-day hot/warm retention with daily index rotation
+
+DETECTION ENGINEERING (Phase 3):
+Built three-layer detection architecture:
+• Custom Suricata Rules: DoublePulsar SMB backdoor, Nmap SYN stealth scans, RDP DoS (CVE-2012-0152), Telnet botnet probes
+• Sigma YAML Rules: Portable detection logic for Splunk, Elastic, Microsoft Sentinel
+• Kibana KQL Queries: Production-ready SOC analyst triage dashboards
+
+THREAT ANALYSIS (Phase 4):
+Identified 6 primary attack vectors across 141 events with 12.229 avg daily attack rate:
+• DoublePulsar SMB Backdoor: 1,601 Suricata alerts (ET EXPLOIT SID 2024766)
+• Telnet IoT Botnet: 33 attacks on Port 23 (Mirai/Qbot credential sweeps)
+• SSH Brute Force: 13 password spray sessions targeting shell access
+• RDP DoS (CVE-2012-0152): 5 alerts for MS12-020 remote desktop crash attempts
+• Web Reconnaissance: 20 attacks on HTTP/HTTPS for vulnerability scanning
+• Nmap SYN Stealth: 20 network mapping probes (ET SCAN SID 2009582)
+
+THREAT ACTOR ATTRIBUTION (Phase 5):
+Geographic & autonomous system mapping across 57 unique source IPs:
+• AS5089 Virgin Media (UK): 18 attacks (top source: 80.195.138.223)
+• AS4134 Chinanet (China): 10 attacks
+• AS210558 1337 Services GmbH: 9 attacks
+• AS8151 UNINET (Mexico), AS8517 Academic Net (Turkey), AS9121 Turk Telekom: 6 attacks each
+
+DEFENSIVE RECOMMENDATIONS (Phase 6):
+Documented security engineering controls: egress filtering, EDR deployment, WAF rules, RDP restrictions, SSH key enforcement, threat intelligence integration.`,
     repo: 'https://github.com/Dgrover07/Honey_pot_project',
-    tags: ['T-Pot', 'Suricata', 'Docker', 'NIDS', 'Threat Intelligence', 'Incident Analysis'],
+    tags: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Elastic Stack', 'Filebeat/Logstash', 'Kibana', 'Threat Intelligence', 'SOC Operations'],
     points: [
-      'Deployed and configured a containerized multi-honeypot framework capturing 141 attack events with an average daily attack rate of 12.229 events/day.',
-      'Analyzed Telnet (Port 23), SMB (Port 445), and RDP (Port 3389) attack patterns to identify top threat actors and exploitation techniques.',
-      'Identified critical CVEs (CVE-2012-0152 MS12-020, DoublePulsar backdoor signatures) and produced threat actor intelligence by autonomous system analysis.',
-      'Documented the 6-phase SOC threat intelligence lifecycle with deployment topology, detection rules, threat analysis, and defensive security engineering recommendations.'
+      'Phase 1 Deployment: Containerized 6-honeypot framework (Cowrie, Dionaea, RDPHoneypot, Tanner, Ciscoasa) + Suricata NIDS on Ubuntu 22.04 capturing 141 real-world attack events.',
+      'Phase 2 Collection: Normalized honeypot + NIDS logs into Elastic Stack with ECS schema, GeoIP enrichment, and ASN attribution for 57 unique threat actors.',
+      'Phase 3-4 Detection & Analysis: Engineered custom Suricata signatures, Sigma rules, and Kibana queries; identified DoublePulsar (1,601 alerts), Telnet botnet (Port 23), RDP DoS (CVE-2012-0152), web reconnaissance, and Nmap stealth scans.',
+      'Phase 5-6 Threat Intelligence & Defense: Mapped attacker autonomous systems (AS5089 Virgin Media UK leading with 18 attacks); produced defensive recommendations for egress filtering, EDR, WAF rules, and threat intelligence integration.'
     ],
-    tech: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Ubuntu 22.04', 'Cowrie', 'Dionaea', 'Network Telemetry', 'Threat Intelligence', 'SOC Operations']
+    tech: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Ubuntu 22.04', 'Cowrie', 'Dionaea', 'RDPHoneypot', 'Elastic Stack', 'Filebeat', 'Logstash', 'Elasticsearch', 'Kibana', 'ECS Schema', 'MaxMind GeoIP', 'Sigma Rules', 'KQL', 'Threat Intelligence', 'SOC Operations']
   }
 };
 
