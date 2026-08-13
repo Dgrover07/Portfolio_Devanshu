@@ -682,6 +682,174 @@ time {
   box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
 }
 
+.project-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.project-btn {
+  flex: 1;
+  text-align: center;
+}
+
+.project-link {
+  font: 11px 'DM Mono', monospace;
+  color: var(--gold2);
+  transition: opacity 0.3s ease;
+}
+
+.project-link:hover {
+  opacity: 0.8;
+}
+
+.project-detail-shell {
+  max-width: var(--max);
+  margin: auto;
+  padding: 130px 30px 70px;
+}
+
+.project-detail-shell .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold2);
+  font: 11px 'DM Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.project-page-header {
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.5);
+}
+
+.project-page-header .detail-badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  font: 10px 'DM Mono', monospace;
+  color: var(--emerald-glow);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 6px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.project-page-header h1 {
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  margin: 0 0 12px;
+  color: #f8fafc;
+}
+
+.project-page-header p {
+  color: var(--muted);
+  max-width: 760px;
+  font-size: 16px;
+  margin: 0 0 24px;
+}
+
+.project-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.project-detail-shell .project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: none;
+  padding-top: 0;
+}
+
+.project-content {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.project-card,
+.project-side .project-meta {
+  border: 1px solid var(--line);
+  background: #0f172a;
+  border-radius: 12px;
+  padding: 26px 28px;
+}
+
+.project-card h2,
+.project-side h3 {
+  margin: 0 0 14px;
+  color: #f8fafc;
+  font-size: 24px;
+}
+
+.project-card p,
+.project-side p,
+.project-side li {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.project-card ul,
+.project-side ul {
+  margin: 16px 0 0;
+  padding-left: 18px;
+}
+
+.project-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inline-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--gold2);
+  font: 11px 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 850px) {
+  .project-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .project-detail-shell {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .project-page-header {
+    padding: 24px 20px;
+  }
+
+  .project-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .project-btn {
+    width: 100%;
+  }
+}
+
 /* ═══════════════════════════════════════
    MSc DISSERTATION FEATURE BANNER
    ═══════════════════════════════════════ */
