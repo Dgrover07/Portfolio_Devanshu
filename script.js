@@ -53,56 +53,103 @@ const projectData = {
     category: '04 · SOC THREAT INTELLIGENCE',
     name: 'T-Pot Multi-Honeypot SOC Threat Intelligence Assessment',
     summary: 'Deployed an enterprise-scale multi-honeypot SOC environment using T-Pot and Suricata NIDS to capture, analyze and investigate real-world threat telemetry across 141 attack events.',
-    description: `This comprehensive SOC project applied the 6-phase threat intelligence lifecycle across deployment, collection, detection, analysis, findings, and defensive recommendations.
+    description: `EXECUTIVE SUMMARY
+141 honeypot attack events | 12.229 avg daily attack rate | 57 unique threat actors | 6 attack vectors mapped | 1,601 DoublePulsar alerts | 4 critical CVEs identified
 
-INFRASTRUCTURE & DEPLOYMENT (Phase 1):
-Deployed T-Pot v24.04 on Ubuntu 22.04 LTS with 6 containerized honeypot daemons:
-• Cowrie (SSH/Telnet): Captured brute-force authentication & malware binary drops
-• Dionaea (SMB/Port 445): Trapped SMB exploits (MS17-010 / EternalBlue, DoublePulsar)
-• RDPHoneypot (Port 3389): Emulated Windows RDP to capture credential spraying & DoS
-• Tanner & H0neytr4p (Ports 80/443): Dynamic web honeypots for vulnerability scanning
-• Ciscoasa (Port 500): VPN exploit detection for Cisco ASA simulation
-• Suricata NIDS: Real-time network intrusion detection with Emerging Threats rulesets
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-COLLECTION & NORMALIZATION (Phase 2):
-Ingested honeypot logs into Elastic Stack (Filebeat → Logstash → Elasticsearch):
-• Standardized logs to Elastic Common Schema (ECS) with normalized fields
-• GeoIP & ASN enrichment via MaxMind GeoLite2 for geographic attribution
-• 30-day hot/warm retention with daily index rotation
+PHASE 1: DEPLOYMENT & INFRASTRUCTURE
+├─ T-Pot v24.04 on Ubuntu 22.04 LTS (Cloud VM, isolated network)
+├─ 6 Containerized Honeypot Daemons:
+│  ├─ Cowrie (SSH/Telnet Ports 22/23): Brute-force & malware binary capture
+│  ├─ Dionaea (SMB Port 445): EternalBlue/MS17-010 exploitation trapping
+│  ├─ RDPHoneypot (Port 3389): Windows RDP credential spraying & DoS
+│  ├─ Tanner & H0neytr4p (HTTP/HTTPS 80/443): Web scanner detection
+│  ├─ Ciscoasa (VPN Port 500): Cisco ASA firewall simulation
+│  └─ Suricata NIDS: Real-time network intrusion detection (ET rulesets)
+└─ Architecture: Public Internet → Edge Firewall → Port Mirror TAP → NIDS → Docker Container Cluster
 
-DETECTION ENGINEERING (Phase 3):
-Built three-layer detection architecture:
-• Custom Suricata Rules: DoublePulsar SMB backdoor, Nmap SYN stealth scans, RDP DoS (CVE-2012-0152), Telnet botnet probes
-• Sigma YAML Rules: Portable detection logic for Splunk, Elastic, Microsoft Sentinel
-• Kibana KQL Queries: Production-ready SOC analyst triage dashboards
+PHASE 2: LOG COLLECTION & NORMALIZATION
+├─ Elastic Stack Pipeline: Filebeat → Logstash → Elasticsearch → Kibana
+├─ Elastic Common Schema (ECS) Standardization:
+│  ├─ source.ip, destination.port, event.dataset, suricata.signature normalized
+│  ├─ GeoIP & ASN enrichment via MaxMind GeoLite2
+│  └─ Daily index rotation with 30-day hot/warm retention
+└─ Output: Unified log storage across all honeypot + NIDS telemetry
 
-THREAT ANALYSIS (Phase 4):
-Identified 6 primary attack vectors across 141 events with 12.229 avg daily attack rate:
-• DoublePulsar SMB Backdoor: 1,601 Suricata alerts (ET EXPLOIT SID 2024766)
-• Telnet IoT Botnet: 33 attacks on Port 23 (Mirai/Qbot credential sweeps)
-• SSH Brute Force: 13 password spray sessions targeting shell access
-• RDP DoS (CVE-2012-0152): 5 alerts for MS12-020 remote desktop crash attempts
-• Web Reconnaissance: 20 attacks on HTTP/HTTPS for vulnerability scanning
-• Nmap SYN Stealth: 20 network mapping probes (ET SCAN SID 2009582)
+PHASE 3: DETECTION ENGINEERING
+├─ Custom Suricata NIDS Signatures (rules/suricata_custom.rules):
+│  ├─ SID 9000001: DoublePulsar SMB Backdoor Communication
+│  ├─ SID 9000002: Nmap Stealth SYN Scans (WinSize 1024)
+│  ├─ SID 9000003: RDP Syn-Reset DoS (CVE-2012-0152)
+│  └─ SID 9000004: Telnet Botnet High-Frequency Probes
+├─ Sigma YAML Rules: Portable logic for Splunk/Elastic/Sentinel
+└─ Kibana KQL Queries: Production SOC analyst triage dashboards
 
-THREAT ACTOR ATTRIBUTION (Phase 5):
-Geographic & autonomous system mapping across 57 unique source IPs:
-• AS5089 Virgin Media (UK): 18 attacks (top source: 80.195.138.223)
-• AS4134 Chinanet (China): 10 attacks
-• AS210558 1337 Services GmbH: 9 attacks
-• AS8151 UNINET (Mexico), AS8517 Academic Net (Turkey), AS9121 Turk Telekom: 6 attacks each
+PHASE 4: THREAT ANALYSIS & FORENSICS (6 Attack Vectors Identified)
+├─ Vector A: DoublePulsar NSA Backdoor Probing (1,601 Alerts | SID 2024766)
+│  └─ Shadow Brokers leak | Ring-0 kernel payload | SMB Port 445 sweeps
+│
+├─ Vector B: Telnet IoT Botnet Ingress (33 Attacks | Port 23)
+│  └─ Mirai/Qbot signatures | Weak default credentials (admin/admin, root/12345)
+│
+├─ Vector C: SSH Password Spraying (13 Sessions | Port 22)
+│  └─ Dictionary attacks | High-frequency brute force targeting shell access
+│
+├─ Vector D: RDP DoS Exploitation (5 Alerts | CVE-2012-0152 / MS12-020)
+│  └─ Malformed TCP packets | Remote Desktop Service crash attempts
+│
+├─ Vector E: Web Application Reconnaissance (20 Attacks | Ports 80/443)
+│  └─ Directory listing probes | Admin panel scanning | SSL/TLS cipher enumeration
+│
+└─ Vector F: Nmap SYN Stealth Scanning (20 Alerts | SID 2009582)
+   └─ Pre-exploitation network mapping | Open port identification
 
-DEFENSIVE RECOMMENDATIONS (Phase 6):
-Documented security engineering controls: egress filtering, EDR deployment, WAF rules, RDP restrictions, SSH key enforcement, threat intelligence integration.`,
+PHASE 5: THREAT ACTOR ATTRIBUTION & MITRE ATT&CK MAPPING
+Autonomous System Breakdown:
+├─ AS5089 Virgin Media (UK): 18 attacks | TOP SOURCE IP: 80.195.138.223
+├─ AS4134 Chinanet (China): 10 attacks
+├─ AS210558 1337 Services GmbH: 9 attacks | IP: 185.241.208.245
+├─ AS8151 UNINET (Mexico): 8 attacks | IP: 187.132.237.112
+├─ AS8517 Academic Network (Turkey): 6 attacks | IP: 193.140.142.9
+└─ AS9121 Turk Telekom (Turkey): 6 attacks | IP: 81.214.142.193
+
+MITRE ATT&CK Lifecycle Mapping:
+├─ Reconnaissance (T1595.001): Active port scanning (Nmap SYN sweeps)
+├─ Credential Access (T1110.001): Brute force password guessing (SSH/Telnet)
+├─ Initial Access (T1210): Remote service exploitation (DoublePulsar/EternalBlue)
+└─ Impact (T1499.002): OS exhaustion DoS attacks (RDP malformed packets)
+
+PHASE 6: DEFENSIVE RECOMMENDATIONS & SECURITY HARDENING
+├─ Network Controls:
+│  ├─ BLOCK: Port 445 (SMB) & Port 23 (Telnet) at edge firewall
+│  └─ RESTRICT: Port 3389 (RDP) behind Zero-Trust Network Access (ZTNA)
+│
+├─ Host Hardening:
+│  ├─ Disable SMBv1 | Enforce SMBv2/SMBv3 with signing
+│  ├─ SSH: Disable password auth | Ed25519 keys mandatory
+│  └─ Apply: MS12-020, MS17-010 patches immediately
+│
+├─ Automated Response:
+│  ├─ Fail2ban: Drop IPs after 5 failed attempts in 60s
+│  └─ UFW blocklist: Auto-block top threat actor IPs
+│
+└─ Endpoint Detection & Response (EDR): Monitor process execution, network connections, malware payloads
+
+DELIVERABLES:
+├─ soc_analytics.py / .ps1: Python & PowerShell SOC parsing engines
+├─ Suricata/Sigma/KQL rules: Production-ready detection artifacts
+├─ dashboard/index.html: Interactive SOC executive dashboard (Chart.js + live IOC search)
+└─ iocs.json: Extracted threat intelligence export`,
     repo: 'https://github.com/Dgrover07/Honey_pot_project',
-    tags: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Elastic Stack', 'Filebeat/Logstash', 'Kibana', 'Threat Intelligence', 'SOC Operations'],
+    tags: ['T-Pot v24.04', 'Suricata NIDS', 'Elastic Stack', 'Sigma Rules', 'MITRE ATT&CK', 'Threat Intelligence', 'SOC Operations', 'Incident Analysis'],
     points: [
-      'Phase 1 Deployment: Containerized 6-honeypot framework (Cowrie, Dionaea, RDPHoneypot, Tanner, Ciscoasa) + Suricata NIDS on Ubuntu 22.04 capturing 141 real-world attack events.',
-      'Phase 2 Collection: Normalized honeypot + NIDS logs into Elastic Stack with ECS schema, GeoIP enrichment, and ASN attribution for 57 unique threat actors.',
-      'Phase 3-4 Detection & Analysis: Engineered custom Suricata signatures, Sigma rules, and Kibana queries; identified DoublePulsar (1,601 alerts), Telnet botnet (Port 23), RDP DoS (CVE-2012-0152), web reconnaissance, and Nmap stealth scans.',
-      'Phase 5-6 Threat Intelligence & Defense: Mapped attacker autonomous systems (AS5089 Virgin Media UK leading with 18 attacks); produced defensive recommendations for egress filtering, EDR, WAF rules, and threat intelligence integration.'
+      'Phase 1-2: Designed & deployed 6-container honeypot framework (Cowrie, Dionaea, RDPHoneypot, Tanner, Ciscoasa) + Suricata NIDS capturing 141 real-world attacks; normalized to Elastic Stack with ECS schema & GeoIP enrichment.',
+      'Phase 3-4: Engineered custom Suricata signatures, Sigma YAML rules, and Kibana KQL queries; identified 6 attack vectors including 1,601 DoublePulsar alerts (SID 2024766), Telnet botnet (Port 23), RDP DoS (CVE-2012-0152), web reconnaissance, and Nmap stealth scans.',
+      'Phase 5-6: Mapped threat actors across 6 autonomous systems (AS5089 Virgin Media UK leading with 18 attacks); correlated attacks to MITRE ATT&CK lifecycle (Reconnaissance → Initial Access → Impact); documented network, host, and EDR hardening controls.',
+      'Delivered production-ready detection artifacts (Suricata/Sigma/KQL rules), Python & PowerShell SOC analytics engines, interactive executive dashboard (Chart.js), and extracted threat intelligence IOC inventory.'
     ],
-    tech: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Ubuntu 22.04', 'Cowrie', 'Dionaea', 'RDPHoneypot', 'Elastic Stack', 'Filebeat', 'Logstash', 'Elasticsearch', 'Kibana', 'ECS Schema', 'MaxMind GeoIP', 'Sigma Rules', 'KQL', 'Threat Intelligence', 'SOC Operations']
+    tech: ['T-Pot v24.04', 'Suricata NIDS', 'Docker', 'Ubuntu 22.04', 'Elastic Stack', 'Filebeat', 'Logstash', 'Elasticsearch', 'Kibana', 'ECS Schema', 'MaxMind GeoIP', 'Sigma Rules', 'KQL', 'Python', 'PowerShell', 'Chart.js', 'MITRE ATT&CK', 'Threat Intelligence', 'SOC Operations']
   }
 };
 
