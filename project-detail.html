@@ -23,7 +23,13 @@
   </header>
 
   <main class="project-detail-shell">
-    <a class="back-link" href="index.html#projects">← Back to projects</a>
+    <a class="back-link" href="index.html#projects" style="display:inline-block; margin-bottom:15px; color:var(--cyan); text-decoration:none; font-family:'DM Mono', monospace; font-size:13px;">← Back to projects</a>
+
+    <div class="project-switcher-bar" style="display: flex; gap: 10px; margin: 0 0 25px; flex-wrap: wrap;">
+      <a href="project-detail.html?project=tpot-soc-assessment" class="btn btn-sm switcher-pill" data-project-id="tpot-soc-assessment">01 · T-Pot Multi-Honeypot SOC</a>
+      <a href="project-detail.html?project=home-siem-lab" class="btn btn-sm switcher-pill" data-project-id="home-siem-lab">02 · Home SIEM & Windows Lab</a>
+      <a href="project-detail.html?project=phishing-osint" class="btn btn-sm switcher-pill" data-project-id="phishing-osint">03 · Phishing Email OSINT</a>
+    </div>
 
     <section class="project-page-header reveal">
       <span id="project-status" class="detail-badge">LIVE LAB</span>
@@ -42,11 +48,52 @@
 
     <section class="project-content reveal delay">
       <article class="project-card">
-        <h2>Project snapshot</h2>
+        <h2>Project snapshot & methodology</h2>
         <p id="project-description">Description text loads here.</p>
         <ul id="project-points">
           <li>Project details will appear here.</li>
         </ul>
+
+        <div class="project-detail-section" style="margin-top: 30px;">
+          <h3 style="color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 16px;">Component architecture & data pipeline topology</h3>
+          <div class="topology-diagram-box" id="project-topology-box" style="margin-top: 10px;">
+            <!-- Injected by script.js -->
+          </div>
+        </div>
+
+        <div class="project-detail-section" style="margin-top: 30px;">
+          <h3 style="color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 16px;">Detection engineering & rule logic</h3>
+          <div class="rule-box-wrap" style="margin-top: 10px;">
+            <div class="rule-box-header">
+              <span class="rule-type" id="project-rule-type">DETECTION RULE</span>
+              <button class="btn-copy-small" id="project-copy-rule">Copy Rule</button>
+            </div>
+            <pre><code id="project-rule-code">Loading rule logic...</code></pre>
+          </div>
+        </div>
+
+        <div class="project-detail-section" style="margin-top: 30px;">
+          <h3 style="color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 16px;">MITRE ATT&CK matrix alignment</h3>
+          <table class="mitre-table" style="margin-top: 10px;">
+            <thead>
+              <tr>
+                <th>Technique ID</th>
+                <th>Technique Name</th>
+                <th>Phase</th>
+              </tr>
+            </thead>
+            <tbody id="project-mitre-body">
+              <!-- Injected by script.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="project-detail-section" style="margin-top: 30px;">
+          <h3 style="color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 16px;">Analyst takeaways & key findings</h3>
+          <ul id="project-takeaways" class="takeaways-list" style="margin-top: 10px;">
+            <!-- Injected by script.js -->
+          </ul>
+        </div>
       </article>
 
       <aside class="project-side">
@@ -60,7 +107,7 @@
         <div class="project-meta">
           <h3>GitHub repository</h3>
           <p>Explore the source code, setup notes, and implementation details.</p>
-          <a id="project-repo-secondary" class="inline-link" href="#" target="_blank" rel="noopener noreferrer">Visit repo ↗</a>
+          <a id="project-repo-secondary" class="inline-link" href="#" target="_blank" rel="noopener noreferrer">Visit GitHub repo ↗</a>
         </div>
       </aside>
     </section>

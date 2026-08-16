@@ -3,280 +3,965 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Devanshu Grover — MSc Cybersecurity | Networking & AWS Cloud Practitioner | Security Operations">
-  <title>Devanshu Grover | Cybersecurity Portfolio</title>
+  <meta name="description" content="Devanshu Grover — MSc Cybersecurity | Security Operations, SIEM Detection, AWS Cloud Practitioner & Network Defense">
+  <title>Devanshu Grover | Cybersecurity & Security Operations Portfolio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="nav">
+<!-- Dynamic Cyber Particle Canvas Background -->
+<canvas id="cyber-canvas" class="cyber-canvas" aria-hidden="true"></canvas>
+
+<!-- Top reading scroll progress indicator -->
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+
+<!-- Top Navigation -->
+<header class="nav" id="main-nav">
   <a class="logo" href="#home">DG<span>_</span></a>
-  <button class="menu" aria-label="Toggle menu">☰</button>
-  <nav>
-    <a href="#about">About</a><a href="#experience">Experience</a><a href="#projects">Projects</a>
-    <a href="#skills">Skills</a><a href="#education">Education</a><a href="#contact">Contact</a>
+  <button class="menu" aria-label="Toggle navigation menu" id="mobile-menu-btn">☰</button>
+  <nav id="nav-links">
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#soc-investigator">SOC Lab</a>
+    <a href="#skills">Skills</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
   </nav>
-  <a class="nav-cta" href="#contact">Let's talk ↗</a>
+  <div class="nav-right">
+    <button class="nav-cmd-btn" id="cmd-palette-btn" title="Open Quick Command Palette (Ctrl+K)">
+      <span class="cmd-icon">⌘</span>
+      <span class="cmd-text">Quick Search</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+    <a class="nav-cta" href="#contact">Let's talk ↗</a>
+  </div>
 </header>
 
-<main>
+<main id="main-content">
+<!-- ═══════════════════════════════════════
+     HERO SECTION
+     ═══════════════════════════════════════ -->
 <section id="home" class="hero">
   <div class="hero-copy reveal">
-    <p class="kicker"><span></span> CYBERSECURITY · NETWORKING · CLOUD</p>
+    <p class="kicker"><span class="pulse-dot"></span> CYBERSECURITY · SIEM & DETECTION · CLOUD DEFENSE</p>
     <h1>Devanshu<br><i>Grover</i></h1>
-    <p class="role">MSc Cybersecurity · AWS Certified Cloud Practitioner · 2+ years work experience</p>
-    <p class="intro">MSc Cybersecurity graduate with Level 1/2 support experience across Windows, Linux and AWS. Adapted quickly across IT support, freelance delivery, customer operations and retail, supporting 50+ clients and contributing to a reported 40% reduction in downtime. Built practical SOC projects using Splunk and Sysmon for alert triage, IOC identification and incident reporting.</p>
-    <div class="actions"><a class="btn primary" href="#projects">Explore my work ↓</a><a class="btn" href="#contact">Get in touch ↗</a></div>
-    <div class="links"><a href="https://www.linkedin.com/in/devanshugrover-22b097208" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="mailto:groverdevanshu623@gmail.com">Email ↗</a></div>
-    <div class="scroll-indicator">
+    <p class="role">MSc Cybersecurity · <span id="scramble-role" class="scramble-role" data-roles='["SOC ANALYST (TIER 1/2)", "DETECTION ENGINEER", "THREAT HUNTER", "AWS CLOUD DEFENDER", "SIEM SPECIALIST"]'>SOC ANALYST (TIER 1/2)</span> · AWS Cloud Practitioner</p>
+    <p class="intro">
+      MSc Cybersecurity graduate based in Cheltenham, UK. I turn security telemetry into actionable defense—monitoring Windows and Linux systems, engineering detection rules with Splunk & Sysmon, and analyzing real-world adversary behavior across honeypot networks and AWS cloud infrastructure.
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="#projects">Explore my projects ↓</a>
+      <a class="btn" href="#soc-investigator">Inspect SOC Telemetry ⚡</a>
+      <a class="btn ghost" href="#contact">Get in touch ↗</a>
+    </div>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/devanshugrover-22b097208" target="_blank" rel="noopener noreferrer" class="link-item">
+        <span class="link-bullet">↗</span> LinkedIn
+      </a>
+      <a href="https://github.com/Dgrover07" target="_blank" rel="noopener noreferrer" class="link-item">
+        <span class="link-bullet">↗</span> GitHub
+      </a>
+      <a href="mailto:groverdevanshu623@gmail.com" class="link-item">
+        <span class="link-bullet">↗</span> Email
+      </a>
+      <span class="location-badge">📍 Cheltenham, United Kingdom</span>
+    </div>
+    <div class="scroll-indicator" title="Scroll down">
       <span>↓</span>
     </div>
   </div>
-  <div class="terminal reveal delay">
-    <div class="term-head"><span>●</span><span>●</span><span>●</span><em>security_lab.sh</em></div>
-    <div class="term-body">
-      <p><b>$</b> whoami</p><strong>devanshu@security-lab</strong>
-      <p><b>$</b> focus --current</p><span>SIEM / SOC / Cloud / Detection</span>
-      <p><b>$</b> telemetry --sources</p><small>Windows Events · Sysmon · Splunk<br>Linux · AWS IAM · Network traffic</small>
-      <p><b>$</b> status</p><span class="ok">● building · learning · investigating</span>
+
+  <!-- Interactive Terminal Emulator -->
+  <div class="terminal reveal delay" id="security-terminal">
+    <div class="term-head">
+      <div class="term-controls">
+        <span class="term-dot close"></span>
+        <span class="term-dot min"></span>
+        <span class="term-dot max"></span>
+      </div>
+      <div class="term-title">devanshu@glos-soc:~$</div>
+      <div class="term-status"><span class="status-live">●</span> CAPTURING</div>
+    </div>
+    <div class="term-body" id="term-body">
+      <div class="term-output" id="term-output">
+        <div class="term-welcome">
+          <p class="term-dim">Devanshu Grover — Security Analyst Workstation [v2.4.0-glos]</p>
+          <p class="term-dim">Type <b class="term-highlight">help</b> to see commands, or click the quick action chips below.</p>
+          <div class="term-init-line">
+            <p><b>$</b> whoami</p>
+            <strong>devanshu@glos-soc</strong>
+            <small>MSc Cybersecurity (Distinction candidate) · AWS Cloud Practitioner · SOC & SIEM</small>
+          </div>
+          <div class="term-init-line">
+            <p><b>$</b> focus --current</p>
+            <span>SIEM Detection · T-Pot Multi-Honeypots · Threat Intel · Incident Triage</span>
+          </div>
+        </div>
+      </div>
+      <form class="term-input-form" id="term-form" onsubmit="return false;">
+        <label for="term-input" class="term-prompt">
+          <span class="prompt-user">devanshu@soc</span>:<span class="prompt-path">~/lab</span>$
+        </label>
+        <input 
+          type="text" 
+          id="term-input" 
+          class="term-input" 
+          autocomplete="off" 
+          spellcheck="false" 
+          placeholder="type 'help', 'projects', 'soc'..." 
+          aria-label="Terminal command input"
+        />
+      </form>
+    </div>
+    <div class="term-chips" id="term-chips">
+      <button class="term-chip" data-cmd="help">help</button>
+      <button class="term-chip" data-cmd="whoami">whoami</button>
+      <button class="term-chip" data-cmd="projects">projects</button>
+      <button class="term-chip" data-cmd="skills">skills</button>
+      <button class="term-chip" data-cmd="soc">soc-stats</button>
+      <button class="term-chip" data-cmd="certs">certs</button>
+      <button class="term-chip" data-cmd="cat notes.txt">notes.txt</button>
+      <button class="term-chip" data-cmd="contact">contact</button>
+      <button class="term-chip" data-cmd="clear">clear</button>
     </div>
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     INFINITE CYBER TECH MARQUEE
+     ═══════════════════════════════════════ -->
+<div class="tech-marquee-container" aria-label="Core cybersecurity tools and frameworks">
+  <div class="tech-marquee-track">
+    <div class="tech-pill"><span class="pill-dot ok"></span> Splunk Enterprise</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Suricata NIDS</div>
+    <div class="tech-pill"><span class="pill-dot alert"></span> T-Pot v24.04</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Sysmon XML Logging</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Elastic Stack (ECS)</div>
+    <div class="tech-pill"><span class="pill-dot"></span> AWS EC2 / IAM / CloudWatch</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Kali Linux & Nmap</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Wireshark & Packet Triage</div>
+    <div class="tech-pill"><span class="pill-dot"></span> CyberChef & Defanging</div>
+    <div class="tech-pill"><span class="pill-dot alert"></span> VirusTotal & URLScan</div>
+    <div class="tech-pill"><span class="pill-dot"></span> MITRE ATT&CK Framework</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Sigma Detection Rules</div>
+    <!-- Seamless Loop Clone -->
+    <div class="tech-pill"><span class="pill-dot ok"></span> Splunk Enterprise</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Suricata NIDS</div>
+    <div class="tech-pill"><span class="pill-dot alert"></span> T-Pot v24.04</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Sysmon XML Logging</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Elastic Stack (ECS)</div>
+    <div class="tech-pill"><span class="pill-dot"></span> AWS EC2 / IAM / CloudWatch</div>
+    <div class="tech-pill"><span class="pill-dot"></span> Kali Linux & Nmap</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Wireshark & Packet Triage</div>
+    <div class="tech-pill"><span class="pill-dot"></span> CyberChef & Defanging</div>
+    <div class="tech-pill"><span class="pill-dot alert"></span> VirusTotal & URLScan</div>
+    <div class="tech-pill"><span class="pill-dot"></span> MITRE ATT&CK Framework</div>
+    <div class="tech-pill"><span class="pill-dot ok"></span> Sigma Detection Rules</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ABOUT SECTION
+     ═══════════════════════════════════════ -->
 <section id="about" class="section">
-  <div class="section-title reveal"><span>01</span><h2>About me</h2><p>Security-minded problem solving, grounded in practical systems work.</p></div>
+  <div class="section-title reveal">
+    <span>01</span>
+    <h2>About me</h2>
+    <p>Hands-on defense, pragmatic troubleshooting, and evidence-led investigation.</p>
+  </div>
   <div class="about-grid reveal delay">
-    <div class="portrait"><div>DG</div><small>CHELTENHAM, UK</small></div>
+    <div class="portrait">
+      <div class="avatar-box">
+        <span class="avatar-initials">DG</span>
+        <span class="avatar-status">SOC ANALYST</span>
+      </div>
+      <small>CHELTENHAM, GLOUCESTERSHIRE, UK</small>
+      <div class="quick-facts">
+        <div class="fact-item"><strong>MSc</strong> Cybersecurity (2025)</div>
+        <div class="fact-item"><strong>AWS</strong> Cloud Practitioner</div>
+        <div class="fact-item"><strong>Focus</strong> Detection & SIEM</div>
+      </div>
+    </div>
     <div class="copy">
-      <p class="lead">I work at the intersection of <b>cybersecurity, infrastructure and technical support.</b></p>
-      <p>My MSc Cybersecurity provides the academic foundation; hands-on projects and commercial experience are where I turn that knowledge into practical investigation, troubleshooting and documentation.</p>
-      <p>My experience spans Windows and Linux support, AWS EC2/IAM, web applications, customer operations and retail. My security work focuses on SIEM monitoring, endpoint telemetry, phishing investigation, honeypots and incident-style reporting.</p>
-      <p>I am particularly interested in security operations, detection, incident response and the engineering discipline behind reliable defensive systems.</p>
+      <p class="lead">
+        I work where <b>defensive security, systems engineering, and technical problem-solving</b> converge.
+      </p>
+      <p>
+        My MSc in Cybersecurity provided strong theoretical grounding in digital forensics, network security, and machine learning for intrusion detection. But what genuinely excites me is getting into the weeds: building live telemetry labs in VirtualBox, spinning up multi-container honeypots to capture real-world adversary behavior, writing Splunk searches, and triaging alerts.
+      </p>
+      <p>
+        Alongside academic projects, I have over two years of commercial experience spanning IT support (Windows, Linux, AWS EC2/IAM access), freelance delivery for 50+ clients, and operational customer support. That background taught me how to communicate technical risk clearly, troubleshoot under pressure, and write documentation that people can actually use.
+      </p>
+      <p>
+        I'm actively seeking opportunities in <b>Security Operations (SOC), Threat Detection Engineering, Cloud Security, and Systems Analysis</b>.
+      </p>
     </div>
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     EXPERIENCE SECTION
+     ═══════════════════════════════════════ -->
 <section id="experience" class="section">
-  <div class="section-title reveal"><span>02</span><h2>Experience</h2><p>Technical work, customer operations and independent delivery.</p></div>
+  <div class="section-title reveal">
+    <span>02</span>
+    <h2>Experience</h2>
+    <p>Commercial support, operational troubleshooting, and freelance delivery.</p>
+  </div>
   <div class="timeline reveal stagger">
-    <article><time>JUN 2026 — PRESENT</time><div><label>PART-TIME</label><h3>Retail Assistant</h3><h4>Primark · Cheltenham, United Kingdom</h4><ul>
-      <li>Delivered shop-floor assistance during periods serving up to 500 customers, resolving 80% of routine inquiries without escalation.</li>
-      <li>Processed 90+ customer transactions through POS systems, ensuring accurate payment, return and cash-handling procedures.</li>
-      <li>Replenished five product rails per shift using organised stock routines, maintaining availability and presentation standards.</li>
-      <li>Coordinated priorities within a 40+ member team, completing customer, stock and operational tasks within each shift.</li>
-    </ul></div><b>01</b></article>
-    <article><time>SEP 2020 — PRESENT</time><div><label>PROJECT BASED</label><h3>Freelance Web Developer</h3><h4>Self-Employed · Remote</h4><ul>
-      <li>Engineered web solutions and delivered technical support for 50+ clients, achieving 95% satisfaction and generating repeat engagements.</li>
-      <li>Resolved 70% of 15+ monthly application, hosting and connectivity incidents through configuration and log analysis.</li>
-      <li>Optimized 100+ websites through scheduled updates and performance checks, improving service up-time by 30%.</li>
-      <li>Streamlined requirements, documentation and aftercare workflows, reducing average project turnaround time by 20%.</li>
-    </ul></div><b>02</b></article>
-    <article><time>OCT 2025 — APR 2026</time><div><label>OPERATIONS</label><h3>Customer Support and Operations</h3><h4>Valimex Food Distribution & Storage · London, United Kingdom</h4><ul>
-      <li>Triaged 500+ customer inquiries through phone and email, initiating resolution or escalation within minutes of case registration.</li>
-      <li>Documented 500+ client interactions using structured service records, maintaining 95% data accuracy and case traceability.</li>
-      <li>Analyzed recurring service problems through root-cause investigation, reducing repeat inquiries by 30%.</li>
-      <li>Coordinated issue resolution within a 100+ member international workforce, improving response and resolution times by 20%.</li>
-    </ul></div><b>03</b></article>
-    <article><time>SEP 2023 — AUG 2024</time><div><label>TIER 1 / 2 SUPPORT</label><h3>Junior Developer / IT Support</h3><h4>Lido Quality Tutorials Ltd · Remote</h4><ul>
-      <li>Resolved 150+ weekly Windows and Linux support tickets through structured diagnosis, achieving an 80% first-contact resolution rate.</li>
-      <li>Analyzed application and system logs to isolate recurring faults, contributing to a reported 40% reduction in downtime.</li>
-      <li>Monitored AWS EC2 and IAM access for 1,000+ users and numerous instances, maintaining 95%+ service availability.</li>
-      <li>Automated recurring operational tasks using Bash, saving 10% more time in manual administration.</li>
-      <li>Documented 10+ incidents monthly in a technical knowledge base, reducing average resolution time by 10%.</li>
-    </ul></div><b>04</b></article>
+    <article class="timeline-item">
+      <time>JUN 2026 — PRESENT</time>
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <label class="tag-pill">OPERATIONS</label>
+          <h3>Retail Assistant</h3>
+          <h4>Primark · Cheltenham, United Kingdom</h4>
+        </div>
+        <ul>
+          <li>Delivered shop-floor assistance during peak periods serving up to 500 customers, resolving 80% of routine inquiries without escalation.</li>
+          <li>Processed 90+ customer transactions daily through POS systems with rigorous cash handling and accuracy.</li>
+          <li>Replenished high-volume product lines using structured inventory routines, maintaining shelf availability and presentation standards.</li>
+          <li>Coordinated operational priorities with a 40+ member team, adapting quickly to dynamic shift demands.</li>
+        </ul>
+        <div class="card-skills">
+          <span>Communication</span>
+          <span>Fast Triage</span>
+          <span>Team Coordination</span>
+          <span>POS Systems</span>
+        </div>
+      </div>
+      <b>01</b>
+    </article>
+
+    <article class="timeline-item">
+      <time>SEP 2020 — PRESENT</time>
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <label class="tag-pill">INDEPENDENT</label>
+          <h3>Freelance Web Developer</h3>
+          <h4>Self-Employed · Remote</h4>
+        </div>
+        <ul>
+          <li>Delivered web development and hosting support for 50+ clients, maintaining 95% satisfaction and high repeat business.</li>
+          <li>Resolved 70% of 15+ monthly hosting, DNS, SSL, and connectivity incidents through server configuration and log analysis.</li>
+          <li>Optimized 100+ websites with scheduled maintenance and performance checks, contributing to a 30% boost in service up-time.</li>
+          <li>Created structured client handovers and troubleshooting documentation, reducing project turnaround time by 20%.</li>
+        </ul>
+        <div class="card-skills">
+          <span>Linux Hosting</span>
+          <span>DNS & SSL</span>
+          <span>HTTP/S</span>
+          <span>Troubleshooting</span>
+          <span>Git</span>
+        </div>
+      </div>
+      <b>02</b>
+    </article>
+
+    <article class="timeline-item">
+      <time>OCT 2025 — APR 2026</time>
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <label class="tag-pill">OPERATIONS & LOGISTICS</label>
+          <h3>Customer Support and Operations</h3>
+          <h4>Valimex Food Distribution & Storage · London, United Kingdom</h4>
+        </div>
+        <ul>
+          <li>Triaged 500+ customer and supplier inquiries via phone and ticketing, initiating rapid resolution and case routing.</li>
+          <li>Maintained 500+ structured service records with 95% data integrity and complete audit traceability.</li>
+          <li>Conducted root-cause analysis on recurring delivery and order faults, reducing repeat operational inquiries by 30%.</li>
+          <li>Collaborated with a 100+ member international logistics team, improving average query turnaround by 20%.</li>
+        </ul>
+        <div class="card-skills">
+          <span>Root-Cause Analysis</span>
+          <span>Incident Logging</span>
+          <span>Case Traceability</span>
+          <span>SLA Management</span>
+        </div>
+      </div>
+      <b>03</b>
+    </article>
+
+    <article class="timeline-item">
+      <time>SEP 2023 — AUG 2024</time>
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <label class="tag-pill highlight">TIER 1 / 2 SUPPORT</label>
+          <h3>Junior Developer / IT Support</h3>
+          <h4>Lido Quality Tutorials Ltd · Remote</h4>
+        </div>
+        <ul>
+          <li>Resolved 150+ weekly Windows and Linux technical tickets, achieving an 80% first-contact resolution (FCR) rate.</li>
+          <li>Analyzed application and system event logs to isolate recurring faults, contributing to a reported 40% reduction in downtime.</li>
+          <li>Monitored AWS EC2 instances and IAM role assignments for 1,000+ users, maintaining 95%+ service availability.</li>
+          <li>Automated routine system administration workflows using Bash scripts, cutting manual administrative overhead by 10%.</li>
+          <li>Authored 10+ knowledge base articles monthly covering recurring troubleshooting steps and system configurations.</li>
+        </ul>
+        <div class="card-skills">
+          <span>AWS EC2 & IAM</span>
+          <span>Windows / Linux Logs</span>
+          <span>Bash Scripting</span>
+          <span>Ticket Diagnosis</span>
+          <span>KB Authoring</span>
+        </div>
+      </div>
+      <b>04</b>
+    </article>
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     SECURITY PROJECTS SECTION
+     ═══════════════════════════════════════ -->
 <section id="projects" class="section dark">
   <div class="section-title reveal">
     <span>03</span>
-    <h2>Security projects</h2>
-    <p>Hands-on labs across SIEM monitoring, adversary telemetry, and threat investigation.</p>
+    <h2>Hands-on security projects</h2>
+    <p>Practical labs in SIEM monitoring, threat intelligence, adversary telemetry, and detection engineering.</p>
   </div>
 
+  <!-- Real Metrics Summary Dashboard -->
   <div class="stats-dashboard reveal">
-    <div class="stat-card">
+    <div class="stat-card" data-stat="threats">
       <div class="stat-number" data-count="141">0</div>
-      <div class="stat-label">Threat Events</div>
+      <div class="stat-label">Honeypot Attack Events</div>
+      <small class="stat-sub">Real telemetry captured</small>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-stat="doublepulsar">
       <div class="stat-number" data-count="1601">0</div>
       <div class="stat-label">DoublePulsar Alerts</div>
+      <small class="stat-sub">SID 2024766 (Port 445)</small>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-stat="actors">
       <div class="stat-number" data-count="57">0</div>
-      <div class="stat-label">Unique Attackers</div>
+      <div class="stat-label">Unique Threat Actors</div>
+      <small class="stat-sub">Across 6 Autonomous Systems</small>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-stat="cves">
       <div class="stat-number" data-count="4">0</div>
-      <div class="stat-label">Critical CVEs</div>
+      <div class="stat-label">Critical CVEs Identified</div>
+      <small class="stat-sub">CVE-2012-0152, MS17-010, etc.</small>
     </div>
   </div>
 
+  <!-- Project Category Filter Tags -->
   <div class="filter-tags reveal delay">
-    <button class="filter-tag active" data-filter="all">All Projects</button>
+    <button class="filter-tag active" data-filter="all">All Projects (3)</button>
     <button class="filter-tag" data-filter="siem">SIEM & Monitoring</button>
+    <button class="filter-tag" data-filter="investigation">Threat Investigation</button>
     <button class="filter-tag" data-filter="honeypot">Honeypots & Telemetry</button>
-    <button class="filter-tag" data-filter="investigation">Investigation & Forensics</button>
   </div>
   
-  <div class="project-grid reveal stagger">
-    <article class="project" data-project="home-siem-lab" data-filter="siem">
+  <!-- Project Grid -->
+  <div class="project-grid reveal stagger" id="project-grid">
+    
+    <!-- Project 01: T-Pot Multi-Honeypot SOC Assessment (FLAGSHIP) -->
+    <article class="project card-spotlight" data-project="tpot-soc-assessment" data-filter="honeypot">
       <div class="project-header">
-        <small>01 · SIEM & LOGGING</small>
+        <small>01 · FLAGSHIP SOC & THREAT INTEL</small>
+        <span class="badge alert">LIVE HONEYPOT // 141 ATTACKS</span>
+      </div>
+      <h3>T-Pot Multi-Honeypot SOC Threat Intelligence & Security Engineering Assessment</h3>
+      <p>Engineered an enterprise-grade multi-honeypot SOC architecture with T-Pot v24.04 and Suricata NIDS on Ubuntu 22.04 LTS, ingesting 141 real attack events into the Elastic Stack (ECS) across 6 distinct threat vectors.</p>
+      <ul>
+        <li><strong>Sensor Topology:</strong> Deployed 6 containerized honeypot daemons (Cowrie SSH/Telnet, Dionaea SMB, RDPHoneypot, Tanner Web, Ciscoasa) behind promiscuous Suricata NIDS TAP.</li>
+        <li><strong>SIEM & ECS Pipeline:</strong> Ingested telemetry via Filebeat & Logstash with MaxMind GeoIP/ASN enrichment into Elasticsearch across daily indices.</li>
+        <li><strong>Detection Engineering:</strong> Engineered custom Suricata signatures (SIDs 9000001–9000004) and Sigma rules detecting DoublePulsar (1,601 alerts), Mirai botnet sweeps, and RDP DoS (CVE-2012-0152).</li>
+        <li><strong>Attribution & MITRE Mapping:</strong> Mapped threat actors across 6 ASNs (Virgin Media UK leading with 18 attacks from <code>80.195.138.223</code>) and mapped techniques across the MITRE ATT&CK matrix.</li>
+      </ul>
+      <div class="tags">
+        <span>T-Pot v24.04</span>
+        <span>Suricata NIDS</span>
+        <span>Elasticsearch (ECS)</span>
+        <span>Logstash & Filebeat</span>
+        <span>Docker Clusters</span>
+        <span>Sigma Rules</span>
+        <span>MITRE ATT&CK</span>
+        <span>GeoIP & ASN</span>
+      </div>
+      <div class="project-actions">
+        <button class="btn primary btn-quick-view" data-modal="tpot-soc-assessment">View Full Case Study ⚡</button>
+        <a class="project-link" href="https://github.com/Dgrover07/Honey_pot_project" target="_blank" rel="noopener noreferrer">GitHub Repo ↗</a>
+      </div>
+    </article>
+
+    <!-- Project 02: Home SIEM Lab -->
+    <article class="project card-spotlight" data-project="home-siem-lab" data-filter="siem">
+      <div class="project-header">
+        <small>02 · SIEM & DETECTION LOGGING</small>
         <span class="badge ok">LIVE LAB</span>
       </div>
       <h3>Home SIEM & Windows Monitoring Lab</h3>
-      <p>Built a home SIEM environment and ingested Windows Event Logs and Sysmon telemetry into Splunk for centralized security monitoring.</p>
+      <p>Configured an end-to-end telemetry pipeline ingesting Windows 11 Event Logs and Sysmon telemetry into Splunk Enterprise for centralized security monitoring and alert triage.</p>
       <ul>
-        <li>Created searches & dashboards for authentication activity, process execution, and system events.</li>
-        <li>Investigated simulated events and produced incident-style write-ups covering evidence, IOCs, and remediation.</li>
+        <li>Configured custom Sysmon XML schema to capture process creation (Event ID 1), network connections (Event ID 3), and DLL injection.</li>
+        <li>Built Splunk searches and dashboards for failed logon brute force (4625), privilege escalation, and suspicious PowerShell execution.</li>
+        <li>Conducted simulated attacks from Kali Linux (Nmap, Hydra) and authored incident triage write-ups with IOCs.</li>
       </ul>
       <div class="tags">
-        <span>Splunk</span>
+        <span>Splunk Enterprise</span>
         <span>Sysmon</span>
         <span>Windows 11</span>
         <span>Kali Linux</span>
         <span>VirtualBox</span>
+        <span>SPL Queries</span>
       </div>
       <div class="project-actions">
-        <a class="btn project-btn" href="project-detail.html?project=home-siem-lab">View project ↗</a>
-        <a class="project-link" href="https://github.com/Dgrover07/Home-SIEM-Windows-Lab" target="_blank" rel="noopener noreferrer">GitHub repo ↗</a>
+        <button class="btn primary btn-quick-view" data-modal="home-siem-lab">View Full Case Study ⚡</button>
+        <a class="project-link" href="https://github.com/Dgrover07/Home-SIEM-Windows-Lab" target="_blank" rel="noopener noreferrer">GitHub Repo ↗</a>
       </div>
     </article>
 
-    <article class="project" data-project="honeypot-dashboard" data-filter="honeypot">
+    <!-- Project 03: Phishing OSINT -->
+    <article class="project card-spotlight" data-project="phishing-osint" data-filter="investigation">
       <div class="project-header">
-        <small>02 · ADVERSARY TELEMETRY</small>
-        <span class="badge ok">ACTIVE HONEYPOT</span>
-      </div>
-      <h3>Honeypot with Live Attacker Dashboard</h3>
-      <p>Deployed a Linux-based honeypot in an isolated lab and configured logging to capture unauthorized connection attempts and authentication activity.</p>
-      <ul>
-        <li>Analyzed attempted logins, source IPs, timestamps, and recurring brute-force network behaviors.</li>
-        <li>Built a live dashboard and technical reports to visualize attack origin patterns and communicate findings.</li>
-      </ul>
-      <div class="tags">
-        <span>Linux</span>
-        <span>Docker</span>
-        <span>Network Analytics</span>
-        <span>Dashboarding</span>
-      </div>
-      <div class="project-actions">
-        <a class="btn project-btn" href="project-detail.html?project=honeypot-dashboard">View project ↗</a>
-        <a class="project-link" href="https://github.com/Dgrover07/Honeypot-Attacker-Dashboard" target="_blank" rel="noopener noreferrer">GitHub repo ↗</a>
-      </div>
-    </article>
-
-    <article class="project" data-project="phishing-osint" data-filter="investigation">
-      <div class="project-header">
-        <small>03 · THREAT INVESTIGATION</small>
+        <small>03 · THREAT INVESTIGATION & OSINT</small>
         <span class="badge">ANALYSIS</span>
       </div>
       <h3>Phishing Email Investigation & OSINT</h3>
-      <p>Investigated suspicious emails through headers, senders, domains, URLs, and message content for phishing and spoofing indicators.</p>
+      <p>Executed structured header, domain, payload, and attachment triage on suspicious emails to identify credential harvesters, spoofing, and malware staging infrastructure.</p>
       <ul>
-        <li>Used OSINT and threat intelligence tools to identify malicious domain infrastructure and payloads.</li>
-        <li>Produced investigation reports summarizing evidence, risk level, and containment recommendations.</li>
+        <li>Analyzed raw MIME headers (SPF, DKIM, DMARC alignment, Return-Path, Received hops) to verify sender authenticity.</li>
+        <li>Extracted obfuscated URLs and defanged malicious payloads using CyberChef, URLScan.io, and VirusTotal sandbox telemetry.</li>
+        <li>Produced standard SOC incident reports outlining risk severity, Indicators of Compromise (IOCs), and defensive mail-flow recommendations.</li>
       </ul>
       <div class="tags">
         <span>VirusTotal</span>
         <span>URLScan.io</span>
-        <span>MXToolbox</span>
         <span>CyberChef</span>
+        <span>MXToolbox</span>
         <span>WHOIS</span>
+        <span>Header Triage</span>
       </div>
       <div class="project-actions">
-        <a class="btn project-btn" href="project-detail.html?project=phishing-osint">View project ↗</a>
-        <a class="project-link" href="https://github.com/Dgrover07/Phishing-OSINT-Investigation" target="_blank" rel="noopener noreferrer">GitHub repo ↗</a>
-      </div>
-    </article>
-
-    <article class="project" data-project="tpot-soc-assessment" data-filter="honeypot">
-      <div class="project-header">
-        <small>04 · SOC THREAT INTELLIGENCE</small>
-        <span class="badge alert">THREAT TELEMETRY</span>
-      </div>
-      <h3>T-Pot Multi-Honeypot SOC Threat Intelligence Assessment</h3>
-      <p>Deployed an enterprise-scale multi-honeypot SOC environment using T-Pot and Suricata NIDS to capture, analyze and investigate real-world threat telemetry across 141 attack events.</p>
-      <ul>
-        <li>Applied the 6-phase SOC threat intelligence lifecycle: deployment, collection, detection, analysis, findings, and defensive recommendations.</li>
-        <li>Analyzed top threat CVEs (CVE-2012-0152, DoublePulsar backdoor) and identified threat actors by autonomous system analysis.</li>
-      </ul>
-      <div class="tags">
-        <span>T-Pot</span>
-        <span>Suricata NIDS</span>
-        <span>Docker</span>
-        <span>Threat Intelligence</span>
-        <span>SOC Operations</span>
-      </div>
-      <div class="project-actions">
-        <a class="btn project-btn" href="project-detail.html?project=tpot-soc-assessment">View project ↗</a>
-        <a class="project-link" href="https://github.com/Dgrover07/Honey_pot_project" target="_blank" rel="noopener noreferrer">GitHub repo ↗</a>
+        <button class="btn primary btn-quick-view" data-modal="phishing-osint">View Full Case Study ⚡</button>
+        <a class="project-link" href="https://github.com/Dgrover07/Phishing-OSINT-Investigation" target="_blank" rel="noopener noreferrer">GitHub Repo ↗</a>
       </div>
     </article>
   </div>
 
+  <!-- MSc Research Dissertation Banner -->
   <div class="dissertation reveal delay">
-    <div class="dissertation-badge">MSc RESEARCH DISSERTATION · 2025</div>
+    <div class="dissertation-badge">MSc RESEARCH DISSERTATION · 2025 · UNIVERSITY OF GLOUCESTERSHIRE</div>
     <h3>Enhancing Intrusion Detection Systems Using Artificial Intelligence in a Cloud Environment</h3>
-    <p>Evaluated signature- and anomaly-based detection, false-positive reduction, scalability, explainable AI (XAI), privacy, and adversarial machine learning risks; proposed a scalable, privacy-conscious defense architecture.</p>
+    <p>
+      Evaluated signature- versus anomaly-based detection mechanisms in high-throughput cloud environments (AWS). Investigated false-positive mitigation, explainable AI (XAI) for SOC triage, privacy compliance (GDPR), and robustness against adversarial machine learning evasions. Proposed a scalable, multi-layered cloud detection pipeline.
+    </p>
     <div class="dissertation-chips">
       <span>Signature vs Anomaly IDS</span>
-      <span>False-Positive Mitigation</span>
-      <span>Cloud Scale Architecture</span>
+      <span>False-Positive Reduction</span>
+      <span>Cloud Architecture (AWS)</span>
       <span>Explainable AI (XAI)</span>
-      <span>Adversarial ML Risks</span>
+      <span>Adversarial ML Evasion</span>
+      <span>GDPR Compliance</span>
     </div>
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     INTERACTIVE SOC TELEMETRY INVESTIGATOR
+     ═══════════════════════════════════════ -->
+<section id="soc-investigator" class="section">
+  <div class="section-title reveal">
+    <span>04</span>
+    <h2>Live SOC telemetry & IOC investigator</h2>
+    <p>Explore real honeypot attack events, inspect packet signatures, and review my analyst triage notes.</p>
+  </div>
+
+  <div class="soc-widget reveal delay" id="soc-widget">
+    <div class="soc-widget-header">
+      <div class="soc-widget-title">
+        <span class="pulse-emerald">●</span>
+        <strong>TELEMETRY FEED // T-POT & SURICATA NIDS CAPTURE</strong>
+        <span class="soc-count-badge" id="soc-count-badge">Showing 8 of 141 Events</span>
+        <div class="soc-live-activity" title="Live Telemetry Stream Active">
+          <span class="activity-label">LIVE FEED</span>
+          <div class="spectrum-bars">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+        </div>
+      </div>
+      <div class="soc-search-wrap">
+        <input 
+          type="text" 
+          id="soc-search-input" 
+          class="soc-search-input" 
+          placeholder="Filter by IP (e.g. 80.195), ASN, Port, or CVE..." 
+          aria-label="Filter SOC telemetry events"
+        />
+        <button class="soc-search-clear" id="soc-search-clear" title="Clear filter">×</button>
+      </div>
+    </div>
+
+    <!-- Vector Quick-Filter Tabs -->
+    <div class="soc-filter-bar" id="soc-filter-bar">
+      <button class="soc-tab active" data-vector="all">All Vectors (141)</button>
+      <button class="soc-tab" data-vector="doublepulsar">DoublePulsar (SMB 445)</button>
+      <button class="soc-tab" data-vector="ssh">Cowrie SSH (Port 22)</button>
+      <button class="soc-tab" data-vector="telnet">Telnet Botnet (Port 23)</button>
+      <button class="soc-tab" data-vector="rdp">RDP Crash (CVE-2012-0152)</button>
+      <button class="soc-tab" data-vector="web">Web Recon (80/443)</button>
+    </div>
+
+    <!-- Log Table & Analyst Detail Split View -->
+    <div class="soc-workspace">
+      <!-- Event List Stream -->
+      <div class="soc-log-list" id="soc-log-list" role="listbox" aria-label="SOC telemetry logs">
+        <!-- Dynamically rendered via script.js -->
+      </div>
+
+      <!-- Live Analyst Triage Inspector Panel -->
+      <div class="soc-inspector" id="soc-inspector">
+        <div class="inspector-header">
+          <div class="inspector-badge-row">
+            <span id="insp-severity" class="badge-sev critical">CRITICAL</span>
+            <span id="insp-vector" class="badge-sub">SMB / DoublePulsar</span>
+            <span id="insp-time" class="badge-time">Event #01</span>
+          </div>
+          <h3 id="insp-title">DoublePulsar SMB Kernel Backdoor Probe</h3>
+        </div>
+
+        <div class="inspector-body">
+          <div class="inspector-meta-grid">
+            <div class="meta-item">
+              <label>Source IP</label>
+              <div class="ip-copy-row">
+                <span id="insp-ip" class="mono-highlight">80.195.138.223</span>
+                <button class="btn-copy-small" id="btn-copy-ip" title="Copy Source IP">Copy</button>
+              </div>
+            </div>
+            <div class="meta-item">
+              <label>ASN & Location</label>
+              <span id="insp-asn">AS5089 Virgin Media (UK)</span>
+            </div>
+            <div class="meta-item">
+              <label>Target Port</label>
+              <span id="insp-port">TCP/445 (SMB)</span>
+            </div>
+            <div class="meta-item">
+              <label>MITRE ATT&CK</label>
+              <span id="insp-mitre" class="mitre-tag">T1210: Exploitation of Remote Services</span>
+            </div>
+          </div>
+
+          <div class="inspector-section">
+            <label>Observed Signature / Payload</label>
+            <pre class="code-box"><code id="insp-payload">alert tcp any any -> $HOME_NET 445 (msg:"ET EXPLOIT DoublePulsar Backdoor Ping Request"; content:"|53 4d 42|"; depth:4; sid:2024766;)</code></pre>
+          </div>
+
+          <div class="inspector-section">
+            <label>Devanshu's Analyst Triage Notes</label>
+            <div class="analyst-callout" id="insp-notes">
+              High-frequency automated SMB sweep targeting EternalBlue/DoublePulsar ring-0 kernel implant. Attacker attempted SMB transaction request with opcode 0x23 to confirm presence of backdoor.
+            </div>
+          </div>
+
+          <div class="inspector-section">
+            <label>Defensive Hardening Recommendation</label>
+            <div class="mitigation-callout" id="insp-mitigation">
+              Block TCP port 445 at the external perimeter firewall. Disable SMBv1 across all endpoints, enforce SMBv2/SMBv3 with packet signing, and deploy MS17-010 security updates.
+            </div>
+          </div>
+        </div>
+
+        <div class="inspector-footer">
+          <button class="btn primary" id="btn-copy-ioc">Copy Full IOC Report 📋</button>
+          <a class="btn ghost" href="https://github.com/Dgrover07/Honey_pot_project" target="_blank" rel="noopener noreferrer">T-Pot GitHub Repo ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TECHNICAL SKILLS SECTION
+     ═══════════════════════════════════════ -->
 <section id="skills" class="section">
-  <div class="section-title reveal"><span>04</span><h2>Technical skills</h2><p>The tools and concepts I use to investigate, troubleshoot and build.</p></div>
-  <div class="skills reveal stagger">
-    <div><span>01</span><h3>Security Operations</h3><p>SIEM monitoring · Security event analysis · Alert triage · Log analysis · Incident investigation · Phishing analysis · IOC identification · Incident documentation · Endpoint monitoring · Security reporting</p></div>
-    <div><span>02</span><h3>Operating Systems</h3><p>Windows 10/11 · Ubuntu Linux · Kali Linux · Linux command line</p></div>
-    <div><span>03</span><h3>Networking</h3><p>TCP/IP · DNS · HTTP/S · Packet and protocol analysis · Connectivity troubleshooting · Routing and switching fundamentals</p></div>
-    <div><span>04</span><h3>Cloud & Infrastructure</h3><p>AWS EC2 · IAM · CloudWatch · Infrastructure monitoring · Availability monitoring · Virtual machines · Docker fundamentals</p></div>
-    <div><span>05</span><h3>Programming & Scripting</h3><p>Python · Bash/Shell scripting · SQL · Git · Automation fundamentals</p></div>
-    <div><span>06</span><h3>Frameworks & Concepts</h3><p>MITRE ATT&CK · OWASP Top 10 · Intrusion detection · Indicators of compromise · Threat detection · Anomaly detection · Access control</p></div>
+  <div class="section-title reveal">
+    <span>05</span>
+    <h2>Technical skills & competencies</h2>
+    <p>Tools, concepts, and technologies I use to monitor, investigate, and secure systems.</p>
   </div>
-  <div class="tool-cloud reveal">Splunk · Sysmon · Wireshark · Nmap · VirusTotal · URLScan.io · MXToolbox · WHOIS · CyberChef · JIRA · Azure DevOps · Git · Visual Studio Code · VirtualBox · VMware · WinSCP · AWS Console</div>
+
+  <!-- Skills Category Filter -->
+  <div class="skills-filter-tags reveal delay">
+    <button class="skill-cat-btn active" data-skill-cat="all">All Competencies</button>
+    <button class="skill-cat-btn" data-skill-cat="siem">SIEM & Security Operations</button>
+    <button class="skill-cat-btn" data-skill-cat="cloud">Cloud & Infrastructure (AWS)</button>
+    <button class="skill-cat-btn" data-skill-cat="os">Operating Systems & Forensics</button>
+    <button class="skill-cat-btn" data-skill-cat="net">Networking & Protocols</button>
+    <button class="skill-cat-btn" data-skill-cat="script">Scripting & Detection</button>
+    <button class="skill-cat-btn" data-skill-cat="gov">Frameworks & Compliance</button>
+  </div>
+
+  <!-- Enhanced Skills Matrix Grid -->
+  <div class="skills-matrix reveal stagger" id="skills-matrix">
+    
+    <div class="skill-card card-spotlight" data-cat="siem">
+      <div class="skill-card-head">
+        <span class="skill-index">01</span>
+        <h3>Security Operations & SIEM</h3>
+      </div>
+      <p class="skill-desc">End-to-end telemetry pipeline configuration, alert correlation, and incident triage workflows.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">Splunk Enterprise</span>
+        <span class="tool-tag highlight">Sysmon Telemetry</span>
+        <span class="tool-tag">Suricata NIDS</span>
+        <span class="tool-tag">Elasticsearch & Kibana</span>
+        <span class="tool-tag">Incident Triage</span>
+        <span class="tool-tag">IOC Extraction</span>
+      </div>
+      <small class="skill-context">Applied in: Home SIEM Lab, T-Pot Multi-Honeypot</small>
+    </div>
+
+    <div class="skill-card card-spotlight" data-cat="os">
+      <div class="skill-card-head">
+        <span class="skill-index">02</span>
+        <h3>Operating Systems & Forensics</h3>
+      </div>
+      <p class="skill-desc">Hands-on administration, troubleshooting, and forensic investigation across Windows and Linux environments.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">Windows 10/11 Event Logs</span>
+        <span class="tool-tag highlight">Ubuntu Linux</span>
+        <span class="tool-tag">Kali Linux</span>
+        <span class="tool-tag">VirtualBox & VMware</span>
+        <span class="tool-tag">Process Investigation</span>
+        <span class="tool-tag">CyberChef</span>
+      </div>
+      <small class="skill-context">Used in: Tier 1/2 Support, Phishing OSINT, SIEM Lab</small>
+    </div>
+
+    <div class="skill-card card-spotlight" data-cat="net">
+      <div class="skill-card-head">
+        <span class="skill-index">03</span>
+        <h3>Networking & Protocol Analysis</h3>
+      </div>
+      <p class="skill-desc">Deep packet inspection, network diagnostics, routing fundamentals, and security boundary verification.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">Wireshark Packet Analysis</span>
+        <span class="tool-tag highlight">TCP/IP & Subnetting</span>
+        <span class="tool-tag">DNS, DHCP, HTTP/S</span>
+        <span class="tool-tag">Nmap Port Scanning</span>
+        <span class="tool-tag">Netstat & SSH/Telnet</span>
+        <span class="tool-tag">Firewall Rules (UFW)</span>
+      </div>
+      <small class="skill-context">Applied in: T-Pot NIDS, Network incident resolution</small>
+    </div>
+
+    <div class="skill-card card-spotlight" data-cat="cloud">
+      <div class="skill-card-head">
+        <span class="skill-index">04</span>
+        <h3>Cloud Security & Infrastructure</h3>
+      </div>
+      <p class="skill-desc">AWS certified fundamentals, compute instance monitoring, access management, and cloud intrusion detection research.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">AWS Certified Cloud Practitioner</span>
+        <span class="tool-tag highlight">AWS EC2 & IAM</span>
+        <span class="tool-tag">AWS CloudWatch</span>
+        <span class="tool-tag">Docker Containers</span>
+        <span class="tool-tag">Cloud IDS Research</span>
+        <span class="tool-tag">Availability Checks</span>
+      </div>
+      <small class="skill-context">Certified: AWS CCP | Researched: MSc Cloud IDS Dissertation</small>
+    </div>
+
+    <div class="skill-card card-spotlight" data-cat="script">
+      <div class="skill-card-head">
+        <span class="skill-index">05</span>
+        <h3>Scripting & Detection Engineering</h3>
+      </div>
+      <p class="skill-desc">Writing custom detection signatures, task automation, and parsing security telemetry datasets.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">Python (Log Parsing)</span>
+        <span class="tool-tag highlight">Bash Shell Scripting</span>
+        <span class="tool-tag">Splunk SPL Queries</span>
+        <span class="tool-tag">Sigma Rules (YAML)</span>
+        <span class="tool-tag">Suricata Rules (Custom SIDs)</span>
+        <span class="tool-tag">PowerShell Basics</span>
+      </div>
+      <small class="skill-context">Used in: Detection engineering, Honeypot parsing</small>
+    </div>
+
+    <div class="skill-card card-spotlight" data-cat="gov">
+      <div class="skill-card-head">
+        <span class="skill-index">06</span>
+        <h3>Security Frameworks & Standards</h3>
+      </div>
+      <p class="skill-desc">Applying structured industry methodologies to map adversary tactics and harden defenses.</p>
+      <div class="skill-tools">
+        <span class="tool-tag highlight">MITRE ATT&CK Matrix</span>
+        <span class="tool-tag highlight">NIST CSF</span>
+        <span class="tool-tag">OWASP Top 10</span>
+        <span class="tool-tag">Defense in Depth</span>
+        <span class="tool-tag">Threat Intel Lifecycle</span>
+        <span class="tool-tag">GDPR & Data Privacy</span>
+      </div>
+      <small class="skill-context">Integrated into: All SOC labs & Academic dissertation</small>
+    </div>
+  </div>
+
+  <!-- Tools Summary Bar -->
+  <div class="tool-cloud reveal">
+    <strong>Daily & Lab Toolkit:</strong> Splunk · Sysmon · Suricata · Wireshark · Nmap · Docker · Ubuntu · Kali Linux · Windows 11 · AWS Console · CloudWatch · CyberChef · VirusTotal · URLScan.io · MXToolbox · WHOIS · Git · VS Code · VirtualBox
+  </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     EDUCATION & CERTS SECTION
+     ═══════════════════════════════════════ -->
 <section id="education" class="section">
-  <div class="section-title reveal"><span>05</span><h2>Education</h2><p>Academic grounding in cybersecurity and computer science.</p></div>
+  <div class="section-title reveal">
+    <span>06</span>
+    <h2>Education & certifications</h2>
+    <p>Academic degrees and verified industry credentials.</p>
+  </div>
+  
   <div class="education reveal stagger">
-    <article><time>2025</time><h3>MSc Cybersecurity</h3><h4>University of Gloucestershire · United Kingdom</h4><p>Security Operations · Network Security · Cloud Security · Digital Forensics · Malware Analysis · Penetration Testing · Secure Software Development · Intrusion Detection Systems · AI & Machine Learning for Threat Detection · GDPR & Privacy</p></article>
-    <article><time>2023</time><h3>BEng Computer Science</h3><h4>Kalinga University · India</h4><p>Software development · Databases · Operating systems · Computer networks · Programming · Systems troubleshooting</p></article>
-  </div>
-</section>
+    <article class="edu-card card-spotlight">
+      <div class="edu-time">2025</div>
+      <div class="edu-body">
+        <span class="edu-level">POSTGRADUATE DEGREE</span>
+        <h3>MSc Cybersecurity</h3>
+        <h4>University of Gloucestershire · Cheltenham, United Kingdom</h4>
+        <p>
+          Core modules: Security Operations & Incident Management, Network & Cloud Security, Digital Forensics, Penetration Testing & Ethical Hacking, Malware Analysis, Secure Software Architecture, Machine Learning for IDS, GDPR and Privacy Engineering.
+        </p>
+      </div>
+    </article>
 
-<section class="section compact">
-  <div class="section-title reveal"><span>06</span><h2>Certifications & development</h2></div>
+    <article class="edu-card card-spotlight">
+      <div class="edu-time">2023</div>
+      <div class="edu-body">
+        <span class="edu-level">UNDERGRADUATE DEGREE</span>
+        <h3>BEng Computer Science</h3>
+        <h4>Kalinga University · India</h4>
+        <p>
+          Core modules: Computer Networks, Operating Systems, Database Management Systems, Data Structures & Algorithms, Systems Troubleshooting, Software Engineering.
+        </p>
+      </div>
+    </article>
+  </div>
+
+  <!-- Certifications Grid -->
   <div class="certs reveal stagger">
-    <article><strong>AWS</strong><div><small>CERTIFICATION</small><h3>AWS Certified Cloud Practitioner</h3><p>Amazon Web Services</p></div></article>
-    <article><strong>SEC+</strong><div><small>IN PROGRESS</small><h3>CompTIA Security+ SY0-701</h3><p>Currently studying · target completion 2026</p></div></article>
-    <article><strong>THM</strong><div><small>ACTIVE</small><h3>SOC Level 1 learning pathway</h3><p>TryHackMe</p></div></article>
-    <article><strong>HTB</strong><div><small>ACTIVE</small><h3>Practical security labs</h3><p>Hack The Box</p></div></article>
+    <article class="cert-card card-spotlight">
+      <div class="cert-badge-box aws">AWS</div>
+      <div>
+        <small class="cert-status verified">OFFICIAL CERTIFICATION</small>
+        <h3>AWS Certified Cloud Practitioner</h3>
+        <p>Amazon Web Services · Cloud Architecture & Security</p>
+      </div>
+    </article>
+
+    <article class="cert-card card-spotlight">
+      <div class="cert-badge-box sec">SEC+</div>
+      <div>
+        <small class="cert-status in-progress">ACTIVE STUDY</small>
+        <h3>CompTIA Security+ SY0-701</h3>
+        <p>Targeting completion 2026 · Security concepts & operations</p>
+      </div>
+    </article>
+
+    <article class="cert-card card-spotlight">
+      <div class="cert-badge-box thm">THM</div>
+      <div>
+        <small class="cert-status active">HANDS-ON PATHWAY</small>
+        <h3>SOC Level 1 Learning Pathway</h3>
+        <p>TryHackMe · SIEM, Phishing, Wireshark & Incident Triage</p>
+      </div>
+    </article>
+
+    <article class="cert-card card-spotlight">
+      <div class="cert-badge-box htb">HTB</div>
+      <div>
+        <small class="cert-status active">LAB TRAINING</small>
+        <h3>Practical Defensive & SOC Labs</h3>
+        <p>Hack The Box · Endpoint defense and forensic analysis</p>
+      </div>
+    </article>
   </div>
-  <div class="strengths reveal"><b>Professional strengths</b><span>Analytical problem-solving</span><span>Technical documentation</span><span>Incident reporting</span><span>Customer communication</span><span>Stakeholder support</span><span>Root-cause analysis</span><span>Attention to detail</span><span>Prioritization</span><span>Independent learning</span><span>Team collaboration</span></div>
+
+  <!-- Professional Strengths Pills -->
+  <div class="strengths reveal">
+    <b>Core Strengths:</b>
+    <span>Analytical Problem-Solving</span>
+    <span>Technical Documentation</span>
+    <span>Incident Triage & Reporting</span>
+    <span>Customer Communication</span>
+    <span>Root-Cause Analysis</span>
+    <span>Attention to Detail</span>
+    <span>Calm Under Pressure</span>
+    <span>Continuous Self-Learning</span>
+  </div>
 </section>
 
+<!-- ═══════════════════════════════════════
+     CONTACT SECTION
+     ═══════════════════════════════════════ -->
 <section id="contact" class="contact">
-  <div class="section-title reveal"><span>07</span><h2>Let's talk</h2><p>Open to cybersecurity, security operations and technical opportunities.</p></div>
+  <div class="section-title reveal">
+    <span>07</span>
+    <h2>Let's connect</h2>
+    <p>Open to entry & junior roles in Security Operations (SOC), Threat Detection, Cloud Security, and Systems Support.</p>
+  </div>
+
   <div class="contact-grid reveal">
-    <div><p class="big">Build something<br><i>worth defending.</i></p><p>Based in Cheltenham, Gloucestershire, United Kingdom.</p></div>
+    <div class="contact-intro">
+      <p class="big">
+        Build something<br><i>worth defending.</i>
+      </p>
+      <p class="contact-sub">
+        Based in Cheltenham, Gloucestershire, United Kingdom. Open to on-site, hybrid, and remote opportunities across the UK.
+      </p>
+      <div class="availability-pill">
+        <span class="status-live">●</span> Available for immediate interviews & hiring
+      </div>
+    </div>
+
     <div class="contact-details">
-      <a href="mailto:groverdevanshu623@gmail.com"><small>EMAIL</small><b>groverdevanshu623@gmail.com</b></a>
-      <a href="tel:+447586395777"><small>PHONE</small><b>+44 7586 395777</b></a>
-      <a href="https://www.linkedin.com/in/devanshugrover-22b097208" target="_blank" rel="noopener noreferrer"><small>LINKEDIN</small><b>devanshugrover-22b097208 ↗</b></a>
-      <a href="https://github.com/" target="_blank" rel="noopener noreferrer"><small>GITHUB</small><b>github.com ↗</b></a>
+      <div class="contact-card card-spotlight" id="card-copy-email" role="button" tabindex="0" title="Click to copy email address">
+        <small>EMAIL (CLICK TO COPY)</small>
+        <b>groverdevanshu623@gmail.com</b>
+        <span class="copy-hint">Click to copy 📋</span>
+      </div>
+
+      <div class="contact-card card-spotlight" id="card-copy-phone" role="button" tabindex="0" title="Click to copy phone number">
+        <small>PHONE (CLICK TO COPY)</small>
+        <b>+44 7586 395777</b>
+        <span class="copy-hint">Click to copy 📋</span>
+      </div>
+
+      <a class="contact-card card-spotlight" href="https://www.linkedin.com/in/devanshugrover-22b097208" target="_blank" rel="noopener noreferrer">
+        <small>LINKEDIN</small>
+        <b>devanshugrover-22b097208 ↗</b>
+        <span class="copy-hint">View profile ↗</span>
+      </a>
+
+      <a class="contact-card card-spotlight" href="https://github.com/Dgrover07" target="_blank" rel="noopener noreferrer">
+        <small>GITHUB</small>
+        <b>github.com/Dgrover07 ↗</b>
+        <span class="copy-hint">View repositories ↗</span>
+      </a>
     </div>
   </div>
 </section>
 </main>
 
-<footer><span>DG_</span><p>© 2026 Devanshu Grover · Security-minded. Evidence-led. Always learning.</p><div><a href="mailto:groverdevanshu623@gmail.com">@</a><a href="https://www.linkedin.com/in/devanshugrover-22b097208">in</a><a href="https://github.com/">GH</a></div></footer>
+<!-- Footer -->
+<footer>
+  <div class="footer-left">
+    <span class="footer-logo">DG_</span>
+    <p>© 2026 Devanshu Grover · Security-minded. Evidence-led. Always building.</p>
+  </div>
+  <div class="footer-links">
+    <a href="mailto:groverdevanshu623@gmail.com" title="Send Email">@</a>
+    <a href="https://www.linkedin.com/in/devanshugrover-22b097208" target="_blank" rel="noopener noreferrer" title="LinkedIn">in</a>
+    <a href="https://github.com/Dgrover07" target="_blank" rel="noopener noreferrer" title="GitHub">GH</a>
+    <a href="#home" title="Back to top">↑ Top</a>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     IN-PAGE PROJECT QUICK-VIEW MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-backdrop" id="project-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-drawer">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <span class="detail-badge" id="modal-badge">LIVE LAB</span>
+        <h2 id="modal-title">Project Title</h2>
+      </div>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close project modal">×</button>
+    </div>
+
+    <!-- Modal Tab Navigation -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="overview">Overview & Setup</button>
+      <button class="modal-tab" data-tab="detections">Detections & Rules</button>
+      <button class="modal-tab" data-tab="mitre">Threat Intel & MITRE</button>
+      <button class="modal-tab" data-tab="takeaways">Lessons & Takeaways</button>
+    </div>
+
+    <!-- Modal Content Panels -->
+    <div class="modal-body">
+      <!-- Tab 1: Overview -->
+      <div class="tab-panel active" id="tab-overview">
+        <p class="modal-summary" id="modal-summary"></p>
+        <div class="modal-section">
+          <h3>Lab Architecture & Workflow</h3>
+          <ul id="modal-points" class="modal-list"></ul>
+        </div>
+        <div class="modal-section">
+          <h3>Technologies Used</h3>
+          <div id="modal-tech" class="tags"></div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Detections -->
+      <div class="tab-panel" id="tab-detections">
+        <h3>Engineered Detection Rules & Queries</h3>
+        <p class="tab-sub">Custom detection logic, SPL queries, or Sigma rules authored for this project:</p>
+        <div class="rule-box-wrap">
+          <div class="rule-box-header">
+            <span id="modal-rule-type" class="rule-type">SURICATA / SIGMA / SPL</span>
+            <button class="btn-copy-small" id="btn-copy-modal-rule">Copy Rule Code</button>
+          </div>
+          <pre class="code-box"><code id="modal-rule-code">Loading rule...</code></pre>
+        </div>
+      </div>
+
+      <!-- Tab 3: MITRE & Threat Intel -->
+      <div class="tab-panel" id="tab-mitre">
+        <h3>MITRE ATT&CK Mapping & Threat Actor Intel</h3>
+        <div id="modal-mitre-content" class="mitre-content-wrap">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Tab 4: Takeaways -->
+      <div class="tab-panel" id="tab-takeaways">
+        <h3>What I Learned & Key Takeaways</h3>
+        <div id="modal-takeaways-content" class="takeaways-wrap">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <a id="modal-repo-link" class="btn primary" href="#" target="_blank" rel="noopener noreferrer">View GitHub Repo ↗</a>
+      <button class="btn ghost" id="modal-dismiss-btn">Close (Esc)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     COMMAND PALETTE (CTRL+K)
+     ═══════════════════════════════════════ -->
+<div class="cmd-backdrop" id="cmd-palette" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="cmd-box">
+    <div class="cmd-input-row">
+      <span class="cmd-search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="cmd-input" 
+        class="cmd-input" 
+        placeholder="Type a command or jump to section (e.g. 'projects', 'soc', 'skills', 'email')..." 
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="cmd-esc-badge">ESC</kbd>
+    </div>
+    <div class="cmd-list" id="cmd-list" role="listbox">
+      <!-- Options injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TOAST NOTIFICATIONS
+     ═══════════════════════════════════════ -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
 <script src="script.js"></script>
 </body>
 </html>
