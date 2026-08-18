@@ -59,51 +59,6 @@ const projectData = {
     ]
   },
 
-  'home-siem-lab': {
-    id: 'home-siem-lab',
-    badge: 'LIVE LAB',
-    category: '03 · SIEM & DETECTION LOGGING',
-    name: 'Home SIEM & Windows Monitoring Lab',
-    summary: 'Configured an end-to-end telemetry pipeline ingesting Windows 11 Event Logs and Sysmon telemetry into Splunk Enterprise for centralized security monitoring and alert triage.',
-    description: 'Designed a realistic home security monitoring stack. Configured a Windows 11 virtual machine to produce high-fidelity endpoint telemetry via Sysmon, routed logs via Splunk Universal Forwarder into a central Splunk Enterprise instance, and conducted active attack simulations from Kali Linux to build and validate custom detection searches.',
-    repo: 'https://github.com/Dgrover07/Home-SIEM-Windows-Lab',
-    tags: ['Splunk Enterprise', 'Sysmon', 'Windows 11', 'Kali Linux', 'VirtualBox', 'SPL Queries'],
-    points: [
-      'Configured custom Sysmon XML configuration (SwiftOnSecurity baseline) capturing Process Creation (Event ID 1), Network Connections (Event ID 3), and Suspicious Service Installations (Event ID 7045).',
-      'Engineered targeted Splunk correlation searches and dashboard panels for failed logon brute-forcing (Event ID 4625), privilege escalation attempts, and obfuscated PowerShell execution.',
-      'Simulated adversary attacks using Kali Linux (Nmap port sweeps, Hydra credential spraying) to validate detection sensitivity and alert fidelity.',
-      'Authored structured incident write-ups summarizing event timelines, affected hosts, Indicators of Compromise (IOCs), and containment remediation steps.'
-    ],
-    tech: ['Splunk Enterprise', 'Sysmon', 'Windows 11 Enterprise', 'Kali Linux', 'VirtualBox', 'Splunk SPL', 'PowerShell'],
-    ruleType: 'SPLUNK SPL DETECTION SEARCH',
-    ruleCode: `index=windows_security (EventCode=4625 OR EventCode=4624)
-| stats count(eval(EventCode=4625)) as FailedLogons,
-        count(eval(EventCode=4624)) as SuccessfulLogons,
-        values(TargetUserName) as TargetUsers,
-        values(WorkstationName) as Workstations
-        by Source_Network_Address
-| where FailedLogons > 5 AND SuccessfulLogons > 0
-| eval ThreatLevel="High - Possible Brute Force & Account Compromise"
-| table Source_Network_Address, TargetUsers, FailedLogons, SuccessfulLogons, ThreatLevel`,
-    mitreTactics: [
-      { id: 'T1110.001', name: 'Password Guessing / Brute Force', phase: 'Credential Access' },
-      { id: 'T1059.001', name: 'PowerShell Subverted Execution', phase: 'Execution' },
-      { id: 'T1078', name: 'Valid Accounts Abuse', phase: 'Defense Evasion' }
-    ],
-    topology: [
-      { step: '01. Adversary', title: 'Kali Linux Attacker', desc: 'Nmap stealth sweeps, Hydra password spraying & mock staging' },
-      { step: '02. Audit', title: 'Windows 11 Target', desc: 'Sysmon telemetry (Event 1 Process, Event 3 Network) + Event Logs' },
-      { step: '03. Forwarder', title: 'Splunk Universal Forwarder', desc: 'Lightweight agent streaming logs over encrypted TCP/9997' },
-      { step: '04. SIEM Indexer', title: 'Splunk Enterprise', desc: 'Normalizing security pipeline into windows_security index' },
-      { step: '05. Detection Engine', title: 'Custom SPL Searches', desc: 'Real-time correlation queries detecting 4625 brute force' }
-    ],
-    takeaways: [
-      'Default Windows Security Event Logs miss critical process ancestry data; pairing Windows auditing with Sysmon Event ID 1 (CommandLine + ParentImage) is essential for catching malicious child processes spawned by word/powershell.',
-      'Setting up log forwarders highlighted the need for strict index routing and timestamp validation to prevent log lag in Splunk.',
-      'Learned the importance of tuning out benign system background noise (e.g. Windows Defender updates) to keep alert queues manageable for an analyst.'
-    ]
-  },
-
   'phishing-osint': {
     id: 'phishing-osint',
     badge: 'ANALYSIS',
@@ -1009,7 +964,6 @@ function setupCommandPalette() {
     { label: 'Jump to Contact Section', section: '#contact', cat: 'Navigation' },
     { label: 'Inspect T-Pot Multi-Honeypot SOC Assessment (Flagship)', action: () => window.openProjectModal?.('tpot-soc-assessment'), cat: 'Project' },
     { label: 'Inspect Splunk SIEM Incident Investigation: Operation BlackByte (Flagship)', action: () => window.openProjectModal?.('splunk-soc-incident-investigation'), cat: 'Project' },
-    { label: 'Inspect Home SIEM & Windows Monitoring Lab', action: () => window.openProjectModal?.('home-siem-lab'), cat: 'Project' },
     { label: 'Inspect Phishing Email Investigation & OSINT', action: () => window.openProjectModal?.('phishing-osint'), cat: 'Project' },
     { label: 'Copy Email Address (groverdevanshu623@gmail.com)', action: () => copyToClipboard('groverdevanshu623@gmail.com', 'Copied email to clipboard!'), cat: 'Contact' },
     { label: 'Copy Phone Number (+44 7586 395777)', action: () => copyToClipboard('+44 7586 395777', 'Copied phone number to clipboard!'), cat: 'Contact' },
