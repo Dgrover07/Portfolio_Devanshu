@@ -1,0 +1,45 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 2: Execution & Process Lineage (Parent-Child Analysis)
+-- MITRE ATT&CK: T1059.001 (PowerShell), T1564.003 (Hidden Window), T1105 (Ingress Tool Transfer)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Detect Suspicious Child Processes Spawned from Microsoft Office (Sysmon EID 1)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+| search ParentImage="*\\excel.exe" OR ParentImage="*\\winword.exe" OR ParentImage="*\\powerpnt.exe"
+| eval SuspiciousChild=case(
+    match(Image, "(?i)powershell\.exe"), "PowerShell Spawned",
+    match(Image, "(?i)cmd\.exe"), "Command Prompt Spawned",
+    match(Image, "(?i)wscript\.exe"), "WScript Spawned",
+    match(Image, "(?i)certutil\.exe"), "CertUtil LOLBin Spawned",
+    1=1, "Other Child Process"
+  )
+| table _time, Computer, User, ParentImage, ParentProcessId, Image, ProcessId, CommandLine, SuspiciousChild
+| sort - _time;
+
+-- ----------------------------------------------------------------------------
+-- 2. Extract Obfuscated Base64 PowerShell Commands and Calculate Length
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1 Image="*\\powershell.exe"
+| search CommandLine="*-enc*" OR CommandLine="*-EncodedCommand*" OR CommandLine="*-e *"
+| rex field=CommandLine "(?i)-enc(odedcommand)?\s+(?<encoded_payload>[A-Za-z0-9+/=]+)"
+| eval payload_length=len(encoded_payload)
+| table _time, Computer, User, ProcessId, CommandLine, encoded_payload, payload_length;
+
+-- ----------------------------------------------------------------------------
+-- 3. De-obfuscate and Inspect PowerShell Script Block Logging (Event ID 4104)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="WinEventLog:Microsoft-Windows-PowerShell/Operational" EventCode=4104
+| search ScriptBlockText="*DownloadString*" OR ScriptBlockText="*198.51.100.77*" OR ScriptBlockText="*IEX*"
+| stats count min(_time) as first_seen max(_time) as last_seen by Computer, UserId, ScriptBlockText
+| eval first_seen=strftime(first_seen, "%Y-%m-%d %H:%M:%S"), last_seen=strftime(last_seen, "%Y-%m-%d %H:%M:%S")
+| table first_seen, last_seen, Computer, UserId, ScriptBlockText;
+
+-- ----------------------------------------------------------------------------
+-- 4. Hunt for Ingress Tool Transfers and Second-Stage Payload Downloads (Sysmon EID 3)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=3 Image="*\\powershell.exe"
+| search DestinationIp="198.51.100.77" OR DestinationPort IN (80, 443, 8080)
+| table _time, Computer, User, Image, SourceIp, DestinationIp, DestinationPort, Protocol;

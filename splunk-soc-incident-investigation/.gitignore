@@ -1,0 +1,16 @@
+# Splunk SIEM Incident Lab .gitignore
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Splunk Local Files & Temp
+*.tmp
+*.bak
+local/
+var/
+
+# IDE files
+.vscode/
+.idea/

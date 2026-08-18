@@ -1,0 +1,40 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 5: Discovery & Lateral Movement (Pivot Analysis)
+-- MITRE ATT&CK: T1087.002 (Domain Accounts), T1069.002 (Domain Groups), T1021.002 (SMB/Admin Shares), T1569.002 (Service Execution)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Spot Rapid Active Directory & Network Discovery Commands (Sysmon EID 1)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1 Computer="FIN-WS-014*"
+| search Image IN ("*\\net.exe", "*\\net1.exe", "*\\nltest.exe", "*\\whoami.exe", "*\\klist.exe", "*\\ping.exe", "*\\nslookup.exe")
+| stats count values(CommandLine) as ExecutedCommands min(_time) as StartTime max(_time) as EndTime by Computer, User
+| eval StartTime=strftime(StartTime, "%H:%M:%S"), EndTime=strftime(EndTime, "%H:%M:%S")
+| table Computer, User, count, StartTime, EndTime, ExecutedCommands;
+
+-- ----------------------------------------------------------------------------
+-- 2. Track Remote Network Logons Across Subnets (WinEventLog:Security EID 4624)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="WinEventLog:Security" EventCode=4624
+| search Logon_Type=3 TargetUserName="svc_backup"
+| eval Source_IP=coalesce(IpAddress, Source_Network_Address, Workstation_Name)
+| stats count min(_time) as FirstLogon max(_time) as LastLogon by Source_IP, TargetUserName, Computer, Logon_Type, AuthenticationPackageName
+| eval FirstLogon=strftime(FirstLogon, "%Y-%m-%d %H:%M:%S"), LastLogon=strftime(LastLogon, "%Y-%m-%d %H:%M:%S")
+| table FirstLogon, LastLogon, Source_IP, TargetUserName, Computer, AuthenticationPackageName, count;
+
+-- ----------------------------------------------------------------------------
+-- 3. Detect Remote Service Installation (PsExec / Lateral Execution EID 7045 & 4697)
+-- ----------------------------------------------------------------------------
+index=incident_lab (sourcetype="WinEventLog:System" EventCode=7045) OR (sourcetype="WinEventLog:Security" EventCode=4697)
+| rex field=Message "Service Name:\s+(?<ServiceName>[^\r\n]+)"
+| rex field=Message "Service File Name:\s+(?<ServiceFileName>[^\r\n]+)"
+| rex field=Message "Service Type:\s+(?<ServiceType>[^\r\n]+)"
+| table _time, Computer, ServiceName, ServiceFileName, ServiceType
+| sort - _time;
+
+-- ----------------------------------------------------------------------------
+-- 4. Detect Explicit Credential Logons (WinEventLog:Security EID 4648)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="WinEventLog:Security" EventCode=4648
+| table _time, Computer, SubjectUserName, TargetUserName, TargetServerName, ProcessName;

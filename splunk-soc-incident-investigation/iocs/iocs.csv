@@ -1,0 +1,12 @@
+indicator,type,category,threat_actor,mitre_technique,description,confidence
+a7b8c9d0e1f234567890abcdef1234567890abcdef1234567890abcdef123456,SHA256,Payload,BlackByte,T1566.001,Weaponized Excel Macro Dropper (Invoice_Q3_9942.xlsm),High
+198.51.100.77,IPv4,C2 / Infrastructure,BlackByte,T1071.001,Primary Command and Control (C2) Server,High
+198.51.100.12,IPv4,Infrastructure,BlackByte,T1566.001,Malicious Phishing SMTP Relay,High
+update-cdn-service[.]com,Domain,C2 / Infrastructure,BlackByte,T1071.001,Adversary C2 FQDN,High
+http://198.51.100.77/stage2.ps1,URL,Staging,BlackByte,T1105,PowerShell Second-Stage Download URL,High
+http://198.51.100.77/upload,URL,Exfiltration,BlackByte,T1041,Data Exfiltration Staging Endpoint,High
+WindowsAppUpdate,ScheduledTask,Persistence,BlackByte,T1053.005,Malicious Persistence Scheduled Task,High
+C:\Windows\Temp\lsass.dmp,FilePath,Artifact,BlackByte,T1003.001,Extracted LSASS Process Memory Dump,High
+C:\Windows\Temp\Finance_2026_Export.7z,FilePath,Artifact,BlackByte,T1560.001,Encrypted Staged Exfiltration Archive,High
+PSEXESVC.exe,FileName,Tool,BlackByte,T1569.002,PsExec Remote Execution Service Binary,High
+vssadmin.exe delete shadows /all /quiet,CommandLine,Impact,BlackByte,T1490,Volume Shadow Copy Anti-Recovery Command,High

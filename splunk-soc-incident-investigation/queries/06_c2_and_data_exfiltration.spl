@@ -1,0 +1,41 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 6: Command & Control (C2) & Data Exfiltration
+-- MITRE ATT&CK: T1560.001 (Archive via Utility), T1074.001 (Local Staging), T1071.001 (Web Protocols), T1041 (Exfil over C2)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Detect Data Compression and Password Protected Staging (Sysmon EID 1)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+| search Image IN ("*\\7z.exe", "*\\7za.exe", "*\\rar.exe", "*\\tar.exe", "*\\zip.exe")
+| rex field=CommandLine "(?i)(?<ArchiveTool>[^\s]+\.exe)\s+a\s+(?:-p(?<ArchivePass>[^\s]+)\s+)?(?:-mhe=(?<EncryptHeaders>\w+)\s+)?(?<OutputArchive>[^\s]+\.(7z|zip|rar))\s+(?<SourceData>.+)"
+| table _time, Computer, User, Image, OutputArchive, SourceData, ArchivePass;
+
+-- ----------------------------------------------------------------------------
+-- 2. Statistical C2 Beaconing Detection (Interval & Jitter Analysis)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="stream:http" dest_ip="198.51.100.77"
+| sort 0 _time
+| streamstats current=f window=1 last(_time) as prev_time by src_ip, dest_ip
+| eval time_delta=_time - prev_time
+| where isnotnull(time_delta) AND time_delta > 0
+| stats count, avg(time_delta) as avg_interval, stdev(time_delta) as jitter, min(time_delta) as min_interval, max(time_delta) as max_interval by src_ip, dest_ip, http_method, uri
+| eval avg_interval=round(avg_interval, 2), jitter=round(jitter, 2)
+| table src_ip, dest_ip, http_method, uri, count, avg_interval, jitter, min_interval, max_interval;
+
+-- ----------------------------------------------------------------------------
+-- 3. Quantify Outbound Data Exfiltration Volume Spikes (Palo Alto / Stream)
+-- ----------------------------------------------------------------------------
+index=incident_lab (sourcetype="pan:traffic" OR sourcetype="stream:http") dest_ip="198.51.100.77"
+| eval MB_Sent=round(bytes_out / (1024*1024), 2)
+| timechart span=15m sum(MB_Sent) as Total_MB_Exfiltrated by dest_ip;
+
+-- ----------------------------------------------------------------------------
+-- 4. Detect DNS Tunneling / High-Entropy Subdomain Queries
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="stream:dns"
+| eval query_length=len(query)
+| where query_length > 45
+| stats count values(query) as sample_queries by src_ip, query_type, message_type
+| sort - count;

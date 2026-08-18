@@ -1,0 +1,80 @@
+# Sigma Rule Collection: Operation BlackByte Detection
+# Target: Windows Endpoint & Sysmon Telemetry
+
+title: Office Spawning PowerShell or Script Host
+id: 7b8c9d0e-1f23-4567-890a-bcdef1234567
+status: production
+description: Detects Microsoft Office (Excel, Word, PowerPoint) spawning command-line interpreters.
+references:
+    - https://attack.mitre.org/techniques/T1059/001/
+author: Devanshu Grover
+date: 2026/08/18
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_parent:
+        ParentImage|endswith:
+            - '\excel.exe'
+            - '\winword.exe'
+            - '\powerpnt.exe'
+    selection_child:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+            - '\cmd.exe'
+            - '\wscript.exe'
+            - '\certutil.exe'
+    condition: selection_parent and selection_child
+level: high
+tags:
+    - attack.execution
+    - attack.t1059.001
+---
+title: LSASS Memory Dump via Comsvcs DLL
+id: 8c9d0e1f-2345-6789-0abc-def123456789
+status: production
+description: Detects process memory dumping of lsass.exe using rundll32.exe and comsvcs.dll.
+references:
+    - https://attack.mitre.org/techniques/T1003/001/
+author: Devanshu Grover
+date: 2026/08/18
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\rundll32.exe'
+        CommandLine|contains|all:
+            - 'comsvcs'
+            - 'MiniDump'
+    condition: selection
+level: critical
+tags:
+    - attack.credential_access
+    - attack.t1003.001
+---
+title: Volume Shadow Copy Deletion
+id: 9d0e1f23-4567-890a-bcde-f1234567890a
+status: production
+description: Detects deletion of volume shadow copies to inhibit system recovery.
+references:
+    - https://attack.mitre.org/techniques/T1490/
+author: Devanshu Grover
+date: 2026/08/18
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith:
+            - '\vssadmin.exe'
+            - '\wmic.exe'
+        CommandLine|contains|all:
+            - 'delete'
+            - 'shadow'
+    condition: selection
+level: critical
+tags:
+    - attack.impact
+    - attack.t1490

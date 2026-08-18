@@ -1,0 +1,38 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 1: Initial Access & Phishing Triage
+-- MITRE ATT&CK: T1566.001 (Spearphishing Attachment), T1204.002 (Malicious File)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Identify File Creation in User Downloads Directory (Sysmon EID 11)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=11
+| search TargetFilename="*Users\\jdoe\\Downloads*"
+| table _time, Computer, User, TargetFilename, Image, ProcessId
+| sort - _time;
+
+-- ----------------------------------------------------------------------------
+-- 2. Extract Cryptographic SHA256 Hash of Dropped Macro File (Sysmon EID 15)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=15 TargetFilename="*Invoice_Q3_9942.xlsm*"
+| rex field=Hashes "SHA256=(?<sha256>[A-Fa-f0-9]{64})"
+| rex field=Hashes "MD5=(?<md5>[A-Fa-f0-9]{32})"
+| table _time, Computer, TargetFilename, sha256, md5, User;
+
+-- ----------------------------------------------------------------------------
+-- 3. Pivot to Email Gateway Logs to Track Originating Phishing Email
+-- ----------------------------------------------------------------------------
+index=incident_lab (sourcetype="ms:o365:reporting:messagetrace" OR sourcetype="proofpoint:messages")
+| search attachment_name="Invoice_Q3_9942.xlsm" OR recipient_address="jdoe@apex-fin.com"
+| stats count min(_time) as first_seen max(_time) as last_seen by sender_address, recipient_address, subject, attachment_name, sender_ip
+| eval first_seen=strftime(first_seen, "%Y-%m-%d %H:%M:%S"), last_seen=strftime(last_seen, "%Y-%m-%d %H:%M:%S")
+| table first_seen, sender_address, recipient_address, subject, attachment_name, sender_ip;
+
+-- ----------------------------------------------------------------------------
+-- 4. Scope Assessment: Check if Other Users Received the Same Attachment
+-- ----------------------------------------------------------------------------
+index=incident_lab (sourcetype="ms:o365:reporting:messagetrace" OR sourcetype="proofpoint:messages")
+| search attachment_name="Invoice_Q3_9942.xlsm" OR subject="*Quarterly Invoice*"
+| stats count by recipient_address, sender_address, subject, status
+| table recipient_address, sender_address, subject, status, count;

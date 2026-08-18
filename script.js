@@ -7,10 +7,62 @@
    1. ENRICHED PROJECT DATASET
    ═══════════════════════════════════════ */
 const projectData = {
+  'splunk-soc-incident-investigation': {
+    id: 'splunk-soc-incident-investigation',
+    badge: 'ENTERPRISE IR // NIST SP 800-61',
+    category: '02 · ENTERPRISE SIEM & THREAT HUNTING',
+    name: 'Splunk SIEM Incident Investigation & SOC Threat Hunting: Operation BlackByte',
+    summary: 'Conducted end-to-end incident response and threat hunting in Splunk Enterprise reconstructing an enterprise ransomware and data exfiltration intrusion against Apex Global Financial.',
+    description: 'Reconstructed an advanced persistent financial breach (Operation BlackByte). Triaged multi-source enterprise telemetry (Windows Security Event Logs, Sysmon XML, and Zeek network streams) across 7 attack phases, engineered targeted Splunk SPL correlation searches, authored vendor-agnostic Sigma detection rules, and drafted a formal NIST SP 800-61r2 Incident Response Report.',
+    repo: 'https://github.com/Dgrover07/Portfolio_Devanshu/tree/main/splunk-soc-incident-investigation',
+    interactiveDashboard: 'splunk-soc-incident-investigation/dashboards/interactive_soc_viewer.html',
+    tags: ['Splunk Enterprise', 'Splunk SPL', 'Sysmon XML', 'Sigma Rules', 'NIST SP 800-61r2', 'MITRE ATT&CK', 'Active Directory', 'Zeek / HTTP Stream'],
+    points: [
+      'Traced Initial Access: Identified weaponized Excel macro (Invoice_Q3_9942.xlsm) downloaded via spearphishing, verified via Sysmon Event ID 15 Zone Identifier.',
+      'Uncovered Process Lineage: EXCEL.EXE -> powershell.exe (-nop -w hidden -enc) executing in-memory download cradle fetching stage2.ps1 from C2 server 198.51.100.77.',
+      'Correlated Credential Access: Detected LSASS memory dump via rundll32.exe comsvcs.dll (Sysmon Event ID 10 GrantedAccess 0x1010) harvesting APEX\\svc_backup.',
+      'Triaged Lateral Movement: Correlated Network Logon (Event ID 4624 Type 3) and PsExec service installation (Event ID 7045) moving to File Server FS-DATA-01 (10.100.10.20).',
+      'Tracked Data Exfiltration: Discovered 88.4 MB of financial databases compressed into Finance_2026_Export.7z and uploaded via HTTPS to C2 infrastructure.',
+      'Intercepted Anti-Recovery: Caught "vssadmin.exe delete shadows /all /quiet" and coordinated asset containment within 1 hour 45 minutes.'
+    ],
+    tech: ['Splunk Enterprise', 'Splunk SPL', 'Sysmon (Event 1/3/10/15)', 'Sigma Detection Rules', 'NIST SP 800-61r2', 'MITRE ATT&CK Matrix', 'Zeek Network Streams', 'PowerShell Obfuscation Triage'],
+    ruleType: 'SPLUNK SPL CORRELATION SEARCH // LSASS DUMP DETECTOR',
+    ruleCode: `index=* sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=10
+| search TargetImage="*\\lsass.exe" GrantedAccess IN ("0x1010", "0x1410", "0x143a", "0x1FFFFF", "0x1F3FFF")
+| search NOT SourceImage IN ("*\\MsMpEng.exe", "*\\csrss.exe", "*\\svchost.exe")
+| eval AlertTitle="Critical: Unauthorized LSASS Process Memory Access (comsvcs / mimikatz)"
+| eval RiskScore=95
+| table _time, Computer, SourceUser, SourceImage, TargetImage, GrantedAccess, CallTrace, RiskScore`,
+    mitreTactics: [
+      { id: 'T1566.001', name: 'Spearphishing Attachment (Invoice.xlsm)', phase: 'Initial Access' },
+      { id: 'T1059.001', name: 'PowerShell Hidden Encoded Cradle', phase: 'Execution' },
+      { id: 'T1562.001', name: 'Impair Defenses (Defender Folder Exclusion)', phase: 'Defense Evasion' },
+      { id: 'T1053.005', name: 'Scheduled Task (WindowsAppUpdate)', phase: 'Persistence' },
+      { id: 'T1003.001', name: 'LSASS Memory Dump via comsvcs.dll', phase: 'Credential Access' },
+      { id: 'T1021.002', name: 'SMB / Admin Shares (PsExec to FS-DATA-01)', phase: 'Lateral Movement' },
+      { id: 'T1560.001', name: 'Archive via 7-Zip (Password Protected)', phase: 'Collection' },
+      { id: 'T1041', name: 'Exfiltration Over C2 Channel (88.4 MB)', phase: 'Exfiltration' },
+      { id: 'T1490', name: 'Inhibit System Recovery (vssadmin delete shadows)', phase: 'Impact' }
+    ],
+    topology: [
+      { step: '01. Infiltration', title: 'Phishing Email', desc: 'Weaponized Invoice_Q3_9942.xlsm delivered to FIN-WS-014 (jdoe)' },
+      { step: '02. Execution', title: 'PowerShell Cradle', desc: 'Hidden encoded cradle pulling stage2.ps1 from 198.51.100.77' },
+      { step: '03. Credential Dump', title: 'LSASS Dump (comsvcs)', desc: 'rundll32 comsvcs.dll dumps LSASS harvesting svc_backup' },
+      { step: '04. Lateral Pivot', title: 'PsExec to FS-DATA-01', desc: 'SMB network logon & PsExec service install on File Server' },
+      { step: '05. Exfil & Defense', title: '88.4MB Upload & VSS', desc: '7z staging exfiltration; SOC containment halts ransomware' }
+    ],
+    takeaways: [
+      'LSA Protection (Credential Guard) is a mandatory enterprise control: enabling RunAsPPL blocks unprivileged user-space dumps of lsass.exe even if local admin rights are compromised.',
+      'Attack Surface Reduction (ASR) rule "Block Office applications from creating child processes" entirely neutralizes macro-based execution vectors before PowerShell ever launches.',
+      'Privileged service accounts (like backup daemons) must be restricted to Log on as a Batch Job only and blocked from interactive/network logons across end-user workstations.',
+      'Correlating endpoint Sysmon telemetry with perimeter network streams (Zeek/Suricata) enables rapid root-cause timeline construction during P1 enterprise incidents.'
+    ]
+  },
+
   'home-siem-lab': {
     id: 'home-siem-lab',
     badge: 'LIVE LAB',
-    category: '02 · SIEM & DETECTION LOGGING',
+    category: '03 · SIEM & DETECTION LOGGING',
     name: 'Home SIEM & Windows Monitoring Lab',
     summary: 'Configured an end-to-end telemetry pipeline ingesting Windows 11 Event Logs and Sysmon telemetry into Splunk Enterprise for centralized security monitoring and alert triage.',
     description: 'Designed a realistic home security monitoring stack. Configured a Windows 11 virtual machine to produce high-fidelity endpoint telemetry via Sysmon, routed logs via Splunk Universal Forwarder into a central Splunk Enterprise instance, and conducted active attack simulations from Kali Linux to build and validate custom detection searches.',
@@ -407,10 +459,22 @@ function setupTerminal() {
   <p class="term-title-cyan">Hands-On Security Projects:</p>
   <ol class="term-list">
     <li><a href="#projects" class="term-link">[01] T-Pot Multi-Honeypot SOC Assessment</a> — Suricata NIDS, Elastic ECS, 141 Attacks</li>
-    <li><a href="#projects" class="term-link">[02] Home SIEM & Windows Monitoring Lab</a> — Splunk, Sysmon, Windows 11, Kali</li>
-    <li><a href="#projects" class="term-link">[03] Phishing Email Investigation & OSINT</a> — Header Triage, CyberChef, VirusTotal</li>
+    <li><a href="#projects" class="term-link">[02] Splunk Enterprise IR (Operation BlackByte)</a> — Splunk SPL, Sysmon 1/10/15, NIST SP 800-61</li>
+    <li><a href="#projects" class="term-link">[03] Home SIEM & Windows Monitoring Lab</a> — Splunk, Sysmon XML, Kali Linux</li>
+    <li><a href="#projects" class="term-link">[04] Phishing Email Investigation & OSINT</a> — Header Triage, CyberChef, VirusTotal</li>
   </ol>
   <p class="term-dim">Click any project above or scroll down to the Projects section to inspect.</p>
+</div>`,
+
+    splunk: () => `
+<div class="term-res">
+  <p class="term-title-cyan">Splunk Enterprise Incident Investigation (Operation BlackByte):</p>
+  <p>● Target: Apex Global Financial (apex-fin.corp) | Severity: <b class="term-highlight">CRITICAL P1</b></p>
+  <p>● Attack Vector: Weaponized Excel Macro (Invoice_Q3_9942.xlsm) -> Hidden PowerShell Cradle</p>
+  <p>● Credential Dumping: rundll32.exe comsvcs.dll dumping LSASS memory (Sysmon Event ID 10)</p>
+  <p>● Lateral Movement: PsExec service installation on File Server FS-DATA-01 (10.100.10.20)</p>
+  <p>● Exfiltration: 88.4 MB encrypted 7z archive via HTTPS C2 channel to 198.51.100.77</p>
+  <p class="term-dim">Type <b class="cmd-cyan">projects</b> or inspect the case study modal for full SPL queries!</p>
 </div>`,
 
     skills: () => `
@@ -944,6 +1008,7 @@ function setupCommandPalette() {
     { label: 'Jump to Education & Certifications', section: '#education', cat: 'Navigation' },
     { label: 'Jump to Contact Section', section: '#contact', cat: 'Navigation' },
     { label: 'Inspect T-Pot Multi-Honeypot SOC Assessment (Flagship)', action: () => window.openProjectModal?.('tpot-soc-assessment'), cat: 'Project' },
+    { label: 'Inspect Splunk SIEM Incident Investigation: Operation BlackByte (Flagship)', action: () => window.openProjectModal?.('splunk-soc-incident-investigation'), cat: 'Project' },
     { label: 'Inspect Home SIEM & Windows Monitoring Lab', action: () => window.openProjectModal?.('home-siem-lab'), cat: 'Project' },
     { label: 'Inspect Phishing Email Investigation & OSINT', action: () => window.openProjectModal?.('phishing-osint'), cat: 'Project' },
     { label: 'Copy Email Address (groverdevanshu623@gmail.com)', action: () => copyToClipboard('groverdevanshu623@gmail.com', 'Copied email to clipboard!'), cat: 'Contact' },

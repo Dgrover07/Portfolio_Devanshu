@@ -1,0 +1,80 @@
+{
+  "incident_name": "Operation BlackByte",
+  "threat_actor": "BlackByte / Ransomware Extortion Group",
+  "generated_date": "2026-08-18",
+  "investigator": "Devanshu Grover (MSc Cybersecurity)",
+  "iocs": [
+    {
+      "indicator": "a7b8c9d0e1f234567890abcdef1234567890abcdef1234567890abcdef123456",
+      "type": "SHA256",
+      "category": "Payload",
+      "mitre_id": "T1566.001",
+      "description": "Weaponized Excel Macro Dropper (Invoice_Q3_9942.xlsm)",
+      "confidence": "High"
+    },
+    {
+      "indicator": "198.51.100.77",
+      "type": "IPv4",
+      "category": "C2 Infrastructure",
+      "mitre_id": "T1071.001",
+      "description": "Primary Command and Control (C2) Server & Exfil Endpoint",
+      "confidence": "High"
+    },
+    {
+      "indicator": "198.51.100.12",
+      "type": "IPv4",
+      "category": "Mail Relay",
+      "mitre_id": "T1566.001",
+      "description": "Phishing Originating Mail Relay",
+      "confidence": "High"
+    },
+    {
+      "indicator": "update-cdn-service[.]com",
+      "type": "Domain",
+      "category": "C2 Domain",
+      "mitre_id": "T1071.001",
+      "description": "Adversary C2 FQDN",
+      "confidence": "High"
+    },
+    {
+      "indicator": "http://198.51.100.77/stage2.ps1",
+      "type": "URL",
+      "category": "Payload Download",
+      "mitre_id": "T1105",
+      "description": "Second-Stage In-Memory PowerShell Download Cradle",
+      "confidence": "High"
+    },
+    {
+      "indicator": "WindowsAppUpdate",
+      "type": "ScheduledTask",
+      "category": "Persistence",
+      "mitre_id": "T1053.005",
+      "description": "Malicious Scheduled Task",
+      "confidence": "High"
+    },
+    {
+      "indicator": "C:\\Windows\\Temp\\lsass.dmp",
+      "type": "FilePath",
+      "category": "Artifact",
+      "mitre_id": "T1003.001",
+      "description": "LSASS Process Memory Dump",
+      "confidence": "High"
+    },
+    {
+      "indicator": "C:\\Windows\\Temp\\Finance_2026_Export.7z",
+      "type": "FilePath",
+      "category": "Exfiltration Archive",
+      "mitre_id": "T1560.001",
+      "description": "Encrypted Exfiltration Archive",
+      "confidence": "High"
+    },
+    {
+      "indicator": "PSEXESVC.exe",
+      "type": "FileName",
+      "category": "Tool",
+      "mitre_id": "T1569.002",
+      "description": "PsExec Remote Execution Service Binary",
+      "confidence": "High"
+    }
+  ]
+}

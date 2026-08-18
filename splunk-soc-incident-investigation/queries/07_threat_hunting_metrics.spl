@@ -1,0 +1,42 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 7: Threat Hunting, Anti-Recovery & SOC Metrics
+-- MITRE ATT&CK: T1490 (Inhibit System Recovery), T1486 (Data Encrypted for Impact)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Detect Volume Shadow Copy Deletion and Recovery Tampering (Sysmon EID 1)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+| search (Image="*\\vssadmin.exe" AND CommandLine="*delete*shadows*")
+      OR (Image="*\\wmic.exe" AND CommandLine="*shadowcopy*delete*")
+      OR (Image="*\\bcdedit.exe" AND (CommandLine="*recoveryenabled*no*" OR CommandLine="*ignoreallfailures*"))
+      OR (Image="*\\wbadmin.exe" AND CommandLine="*delete*catalog*")
+      OR (Image="*\\powershell.exe" AND CommandLine="*Get-WmiObject*Win32_ShadowCopy*")
+| eval AntiRecoveryTactic=case(
+    match(Image, "(?i)vssadmin\.exe"), "VSSAdmin: Shadow Copy Deletion",
+    match(Image, "(?i)wmic\.exe"), "WMIC: Shadow Copy Deletion",
+    match(Image, "(?i)bcdedit\.exe"), "BCDEdit: Disable Windows Recovery",
+    match(Image, "(?i)wbadmin\.exe"), "WBAdmin: Backup Catalog Deletion",
+    1=1, "Generic Backup Tampering"
+  )
+| table _time, Computer, User, Image, CommandLine, AntiRecoveryTactic
+| sort - _time;
+
+-- ----------------------------------------------------------------------------
+-- 2. Threat Hunting: Rare Process Execution Baseline Deviation
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+| stats count by Image, CommandLine
+| eventstats sum(count) as total_executions
+| eval percentage=round((count/total_executions)*100, 4)
+| where count < 5
+| sort + count;
+
+-- ----------------------------------------------------------------------------
+-- 3. Incident Scope & Impact Summary (Affected Assets, Users, and IPs)
+-- ----------------------------------------------------------------------------
+index=incident_lab
+| eval TargetEntity=coalesce(Computer, dest_ip, TargetFilename, User)
+| stats count by sourcetype, TargetEntity
+| sort - count;

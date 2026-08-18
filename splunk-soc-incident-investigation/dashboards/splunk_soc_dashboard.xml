@@ -1,0 +1,128 @@
+<dashboard version="1.1" theme="dark">
+  <label>Operation BlackByte - SOC Incident Investigation &amp; Forensic Analytics</label>
+  <description>Threat Hunting &amp; Incident Triage Dashboard - NIST SP 800-61 / MITRE ATT&amp;CK</description>
+  
+  <row>
+    <panel>
+      <single>
+        <title>Total Security Telemetry Events</title>
+        <search>
+          <query>index=incident_lab | stats count</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[1000]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Compromised Endpoints</title>
+        <search>
+          <query>index=incident_lab | stats dc(Computer) as count</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xdc4e41"]</option>
+        <option name="rangeValues">[1,2]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Compromised Identities</title>
+        <search>
+          <query>index=incident_lab | stats dc(User) as count</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xdc4e41"]</option>
+        <option name="rangeValues">[1,2]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Data Exfiltrated (MB)</title>
+        <search>
+          <query>index=incident_lab sourcetype="stream:http" dest_ip="198.51.100.77" | eval MB=round(bytes_out/(1024*1024), 2) | stats sum(MB) as count</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[10]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Attack Phase Timeline &amp; Event Velocity</title>
+      <chart>
+        <search>
+          <query>index=incident_lab | timechart span=15m count by sourcetype</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.legend.placement">bottom</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>MITRE ATT&amp;CK Tactics Distribution</title>
+      <chart>
+        <search>
+          <query>index=incident_lab | eval Tactic=case(
+            EventCode==15 OR sourcetype="*messagetrace*", "Initial Access (TA0001)",
+            EventCode==1 AND match(ParentImage, "(?i)excel"), "Execution (TA0002)",
+            EventCode==4698 OR match(CommandLine, "(?i)MpPreference"), "Persistence &amp; Evasion (TA0003/TA0005)",
+            EventCode==10 OR match(CommandLine, "(?i)comsvcs"), "Credential Access (TA0006)",
+            EventCode==4624 OR EventCode==7045, "Lateral Movement (TA0008)",
+            sourcetype="*http*" OR match(CommandLine, "(?i)7z"), "C2 &amp; Exfiltration (TA0011/TA0010)",
+            match(CommandLine, "(?i)vssadmin"), "Impact (TA0040)",
+            1=1, "Other Telemetry"
+          ) | stats count by Tactic</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>High-Risk Process Lineage &amp; LOLBins</title>
+      <table>
+        <search>
+          <query>index=incident_lab EventCode=1 | table _time, Computer, User, ParentImage, Image, CommandLine | sort - _time</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Outbound C2 Network &amp; Exfiltration Traffic</title>
+      <table>
+        <search>
+          <query>index=incident_lab (sourcetype="stream:http" OR sourcetype="pan:traffic") | table _time, src_ip, dest_ip, http_method, uri, bytes_out, status</query>
+          <earliest>0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operation BlackByte — Splunk SOC Incident Investigation Dashboard</title>
+  <style>
+    :root {
+      --bg-primary: #0a0f18;
+      --bg-card: #111927;
+      --bg-card-hover: #172338;
+      --bg-surface: #1e293b;
+      --border-color: #2a374d;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00f2fe;
+      --accent-blue: #38bdf8;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 1.5rem;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-bar h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .badge-critical {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-mitre {
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent-cyan);
+    }
+
+    .stat-card.red::before { background: var(--accent-red); }
+    .stat-card.amber::before { background: var(--accent-amber); }
+    .stat-card.green::before { background: var(--accent-green); }
+
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-card);
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--accent-cyan);
+      border-color: var(--border-color);
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2col { grid-template-columns: 1fr; }
+    }
+
+    .box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .box h2 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .query-box {
+      background: #06090e;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+    }
+
+    .query-explainer {
+      background: rgba(56, 189, 248, 0.05);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 0.75rem 1rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-surface);
+      color: #e2e8f0;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+    }
+
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #cbd5e1;
+      font-family: var(--font-mono);
+    }
+
+    tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    .btn-run {
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-run:hover {
+      background: #38bdf8;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 1.75rem;
+      padding-bottom: 1.5rem;
+      border-left: 2px solid var(--border-color);
+    }
+
+    .timeline-item:last-child {
+      border-left: 2px solid transparent;
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -0.45rem;
+      top: 0.2rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .timeline-dot.red { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+    .timeline-dot.amber { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+
+    .timeline-time {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .timeline-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 0.2rem 0;
+    }
+
+    .timeline-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-bar">
+    <div>
+      <h1>
+        <span>🚨</span> Operation BlackByte — Splunk SIEM Investigation
+        <span class="badge-critical">CRITICAL P1</span>
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+        Target: <b>Apex Global Financial</b> · Incident Response Lead: <b>Devanshu Grover (MSc Cybersecurity)</b>
+      </p>
+    </div>
+    <div>
+      <span class="badge-mitre">NIST SP 800-61r2</span>
+      <span class="badge-mitre">MITRE ATT&CK ALIGNED</span>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card red">
+      <div class="stat-label">Initial Vector</div>
+      <div class="stat-value">Phishing</div>
+      <div class="stat-sub">Invoice_Q3_9942.xlsm</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-label">Compromised Assets</div>
+      <div class="stat-value">2 Hosts</div>
+      <div class="stat-sub">FIN-WS-014, FS-DATA-01</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Exfiltrated Data</div>
+      <div class="stat-value">88.4 MB</div>
+      <div class="stat-sub">Finance & Customer PII</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Containment Status</div>
+      <div class="stat-value">Contained</div>
+      <div class="stat-sub">1h 45m Response Time</div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="showTab('tab-timeline')">📅 Attack Timeline</button>
+    <button class="tab-btn" onclick="showTab('tab-queries')">🔍 SPL Query Simulator</button>
+    <button class="tab-btn" onclick="showTab('tab-mitre')">🗺️ MITRE Matrix</button>
+    <button class="tab-btn" onclick="showTab('tab-iocs')">🎯 Threat IOCs</button>
+  </nav>
+
+  <!-- TAB 1: TIMELINE -->
+  <div id="tab-timeline" class="panel active">
+    <div class="grid-2col">
+      <div class="box">
+        <h2>Chronological Incident Progression</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot red"></div>
+            <div class="timeline-time">09:12:05 UTC · Phase 1</div>
+            <div class="timeline-title">Spearphishing Email Delivered</div>
+            <div class="timeline-desc">Sender: <code>billing-support@spoofed-vendor.com</code> delivered weaponized macro <code>Invoice_Q3_9942.xlsm</code> to <code>jdoe@apex-fin.com</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot red"></div>
+            <div class="timeline-time">09:15:32 UTC · Phase 2</div>
+            <div class="timeline-title">Malicious Macro Execution & Download Cradle</div>
+            <div class="timeline-desc"><code>EXCEL.EXE</code> spawned hidden <code>powershell.exe -enc</code> downloading <code>stage2.ps1</code> from <code>198.51.100.77</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot amber"></div>
+            <div class="timeline-time">09:22:18 UTC · Phase 3</div>
+            <div class="timeline-title">Persistence & Defender Exclusion</div>
+            <div class="timeline-desc">Added Defender exclusion for <code>C:\Windows\Temp</code> and created Scheduled Task <code>WindowsAppUpdate</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot red"></div>
+            <div class="timeline-time">09:40:02 UTC · Phase 4</div>
+            <div class="timeline-title">LSASS Memory Dumped (Comsvcs.dll)</div>
+            <div class="timeline-desc"><code>rundll32.exe</code> dumped LSASS process memory; obtained domain credentials for <code>APEX\svc_backup</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot amber"></div>
+            <div class="timeline-time">10:05:44 UTC · Phase 5</div>
+            <div class="timeline-title">Lateral Movement to File Server</div>
+            <div class="timeline-desc">Authenticated to <code>FS-DATA-01</code> (10.100.10.20) via SMB and installed <code>PSEXESVC.exe</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot red"></div>
+            <div class="timeline-time">10:42:15 UTC · Phase 6</div>
+            <div class="timeline-title">Data Staging & 88.4 MB Exfiltration</div>
+            <div class="timeline-desc">Compressed finance shares with <code>7z.exe</code> and uploaded to <code>http://198.51.100.77/upload</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot red"></div>
+            <div class="timeline-time">10:55:00 UTC · Phase 7</div>
+            <div class="timeline-title">Anti-Recovery Command Triggered</div>
+            <div class="timeline-desc">Executed <code>vssadmin.exe delete shadows /all /quiet</code> before emergency SOC host isolation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h2>Adversary Infrastructure & Scope</h2>
+        <table style="margin-top: 0.5rem;">
+          <thead>
+            <tr><th>Entity</th><th>Role / Identifier</th><th>Type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>FIN-WS-014</code></td><td>10.100.20.45 (jdoe)</td><td>Victim Workstation</td></tr>
+            <tr><td><code>FS-DATA-01</code></td><td>10.100.10.20 (svc_backup)</td><td>Compromised Server</td></tr>
+            <tr><td><code>198.51.100.77</code></td><td>update-cdn-service[.]com</td><td>Attacker C2 Server</td></tr>
+            <tr><td><code>198.51.100.12</code></td><td>Malicious SMTP Relay</td><td>Phishing Origin</td></tr>
+            <tr><td><code>Finance_2026_Export.7z</code></td><td>88.4 MB Encrypted Archive</td><td>Staged Data</td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="margin-top: 1.5rem;">Immediate SOC Containment Actions</h2>
+        <ul style="font-size: 0.85rem; color: #cbd5e1; padding-left: 1.25rem; line-height: 1.7;">
+          <li>✅ Endpoints <code>FIN-WS-014</code> and <code>FS-DATA-01</code> isolated from corporate VLAN.</li>
+          <li>✅ Revoked accounts: <code>APEX\jdoe</code> & <code>APEX\svc_backup</code>.</li>
+          <li>✅ Blocked C2 IP <code>198.51.100.77</code> and domain at perimeter firewalls.</li>
+          <li>✅ Reset Active Directory <code>KRBTGT</code> password twice.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: QUERIES -->
+  <div id="tab-queries" class="panel">
+    <div class="box">
+      <h2>
+        Interactive Splunk SPL Query Simulator
+        <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">Select attack phase to test query</span>
+      </h2>
+
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <button class="btn-run" onclick="runQuery(1)">01 · Phishing Dropper</button>
+        <button class="btn-run" onclick="runQuery(2)">02 · Office Child Process</button>
+        <button class="btn-run" onclick="runQuery(3)">03 · Task Persistence</button>
+        <button class="btn-run" onclick="runQuery(4)">04 · LSASS Dump</button>
+        <button class="btn-run" onclick="runQuery(5)">05 · Lateral PsExec</button>
+        <button class="btn-run" onclick="runQuery(6)">06 · C2 Beaconing</button>
+        <button class="btn-run" onclick="runQuery(7)">07 · VSS Deletion</button>
+      </div>
+
+      <div id="query-display" class="query-box">Select a phase above to view the exact SPL query...</div>
+      <div id="query-desc" class="query-explainer">Analytical explanation of SPL clauses will appear here.</div>
+
+      <h3 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.5rem;">Forensic Query Results</h3>
+      <div id="table-results" style="overflow-x: auto;">
+        <!-- Simulated Table Data -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MITRE -->
+  <div id="tab-mitre" class="panel">
+    <div class="box">
+      <h2>MITRE ATT&CK Enterprise Matrix Mapping</h2>
+      <table>
+        <thead>
+          <tr><th>Tactic</th><th>Technique ID</th><th>Technique Name</th><th>Threat Observable</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Initial Access</td><td><code>T1566.001</code></td><td>Spearphishing Attachment</td><td>Invoice_Q3_9942.xlsm</td></tr>
+          <tr><td>Execution</td><td><code>T1059.001</code></td><td>PowerShell</td><td>Hidden Base64 download cradle</td></tr>
+          <tr><td>Persistence</td><td><code>T1053.005</code></td><td>Scheduled Task</td><td>WindowsAppUpdate registered</td></tr>
+          <tr><td>Defense Evasion</td><td><code>T1562.001</code></td><td>Impair Defenses</td><td>Defender exclusion C:\Windows\Temp</td></tr>
+          <tr><td>Credential Access</td><td><code>T1003.001</code></td><td>LSASS Memory Dumping</td><td>rundll32 comsvcs.dll MiniDump</td></tr>
+          <tr><td>Discovery</td><td><code>T1087.002</code></td><td>Domain Account Discovery</td><td>net group "Domain Admins" /domain</td></tr>
+          <tr><td>Lateral Movement</td><td><code>T1021.002</code></td><td>SMB / Admin Shares</td><td>PsExec connection to FS-DATA-01</td></tr>
+          <tr><td>Collection</td><td><code>T1560.001</code></td><td>Archive via Utility</td><td>7z.exe password protected staging</td></tr>
+          <tr><td>Command & Control</td><td><code>T1071.001</code></td><td>Web Protocols</td><td>HTTP 60s periodic beaconing</td></tr>
+          <tr><td>Exfiltration</td><td><code>T1041</code></td><td>Exfiltration Over C2</td><td>88.4 MB POST upload to /upload</td></tr>
+          <tr><td>Impact</td><td><code>T1490</code></td><td>Inhibit System Recovery</td><td>vssadmin delete shadows /all /quiet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: IOCS -->
+  <div id="tab-iocs" class="panel">
+    <div class="box">
+      <h2>Actionable Threat Indicators of Compromise (IOCs)</h2>
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Type</th><th>Category</th><th>Confidence</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>a7b8c9d0e1f234567890abcdef1234567890abcdef1234567890abcdef123456</code></td><td>SHA256</td><td>Phishing Macro Dropper</td><td>High</td></tr>
+          <tr><td><code>198.51.100.77</code></td><td>IPv4</td><td>Primary C2 Server & Exfil</td><td>High</td></tr>
+          <tr><td><code>update-cdn-service[.]com</code></td><td>Domain</td><td>C2 Infrastructure</td><td>High</td></tr>
+          <tr><td><code>http://198.51.100.77/stage2.ps1</code></td><td>URL</td><td>Payload Download Cradle</td><td>High</td></tr>
+          <tr><td><code>WindowsAppUpdate</code></td><td>TaskName</td><td>Persistence Task</td><td>High</td></tr>
+          <tr><td><code>C:\Windows\Temp\lsass.dmp</code></td><td>FilePath</td><td>LSASS Memory Dump</td><td>High</td></tr>
+          <tr><td><code>C:\Windows\Temp\Finance_2026_Export.7z</code></td><td>FilePath</td><td>Staged Data Archive</td><td>High</td></tr>
+          <tr><td><code>PSEXESVC.exe</code></td><td>FileName</td><td>Lateral Movement Binary</td><td>High</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    const queries = {
+      1: {
+        spl: `index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=15 TargetFilename="*Invoice_Q3_9942.xlsm*"
+| rex field=Hashes "SHA256=(?<sha256>[A-Fa-f0-9]{64})"
+| table _time, Computer, TargetFilename, sha256, User`,
+        desc: "<b>Sysmon Event ID 15</b> captures Alternate Data Streams when users download attachments from the web. The <code>rex</code> clause extracts the SHA256 cryptographic hash.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>TargetFilename</th><th>sha256</th><th>User</th></tr></thead>
+        <tbody><tr><td>2026-08-18 09:14:11</td><td>FIN-WS-014.apex-fin.corp</td><td>C:\\Users\\jdoe\\Downloads\\Invoice_Q3_9942.xlsm</td><td>a7b8c9d0e1f234567890abcdef1234567890abcdef1234567890abcdef123456</td><td>APEX\\jdoe</td></tr></tbody></table>`
+      },
+      2: {
+        spl: `index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1 ParentImage="*\\excel.exe"
+| search Image="*\\powershell.exe"
+| table _time, Computer, User, ParentImage, Image, CommandLine`,
+        desc: "<b>Sysmon Event ID 1</b> identifies abnormal parent-child process lineage where Microsoft Excel spawns a hidden, base64-encoded PowerShell process.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>User</th><th>ParentImage</th><th>Image</th><th>CommandLine</th></tr></thead>
+        <tbody><tr><td>2026-08-18 09:15:32</td><td>FIN-WS-014</td><td>APEX\\jdoe</td><td>...\\EXCEL.EXE</td><td>...\\powershell.exe</td><td>powershell.exe -nop -w hidden -enc SQBFAFgAIAA...</td></tr></tbody></table>`
+      },
+      3: {
+        spl: `index=incident_lab sourcetype="WinEventLog:Security" EventCode=4698
+| rex field=Message "Task Name:\\s+(?<TaskName>[^\\r\\n]+)"
+| table _time, Computer, TaskName, Message`,
+        desc: "<b>Windows Security Event ID 4698</b> triggers when a new Scheduled Task is created. Parses the XML task content to reveal persistence.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>TaskName</th><th>Details</th></tr></thead>
+        <tbody><tr><td>2026-08-18 09:22:18</td><td>FIN-WS-014</td><td>\\Microsoft\\Windows\\AppUpdate\\Check</td><td>Runs updater.ps1 on system logon</td></tr></tbody></table>`
+      },
+      4: {
+        spl: `index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=10 TargetImage="*\\lsass.exe"
+| search GrantedAccess="0x1010"
+| table _time, Computer, SourceImage, TargetImage, GrantedAccess, CallTrace`,
+        desc: "<b>Sysmon Event ID 10 (ProcessAccess)</b> detects rundll32.exe requesting memory-read access (0x1010) to lsass.exe via comsvcs.dll MiniDump export.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>SourceImage</th><th>TargetImage</th><th>GrantedAccess</th><th>CallTrace</th></tr></thead>
+        <tbody><tr><td>2026-08-18 09:40:02</td><td>FIN-WS-014</td><td>...\\rundll32.exe</td><td>...\\lsass.exe</td><td>0x1010</td><td>ntdll.dll+9d424|comsvcs.dll+1a240</td></tr></tbody></table>`
+      },
+      5: {
+        spl: `index=incident_lab (sourcetype="WinEventLog:System" EventCode=7045) OR (sourcetype="WinEventLog:Security" EventCode=4624 Logon_Type=3)
+| table _time, Computer, EventCode, TargetUserName, IpAddress, ServiceName`,
+        desc: "Correlates Network Logon (Logon Type 3) with remote PsExec Service Installation (Event ID 7045) on the enterprise File Server.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>EventCode</th><th>TargetUserName</th><th>IpAddress</th><th>ServiceName</th></tr></thead>
+        <tbody><tr><td>2026-08-18 10:05:44</td><td>FS-DATA-01</td><td>4624 (Logon)</td><td>svc_backup</td><td>10.100.20.45</td><td>-</td></tr>
+        <tr><td>2026-08-18 10:05:46</td><td>FS-DATA-01</td><td>7045 (Service)</td><td>-</td><td>-</td><td>PSEXESVC</td></tr></tbody></table>`
+      },
+      6: {
+        spl: `index=incident_lab sourcetype="stream:http" dest_ip="198.51.100.77"
+| streamstats current=f window=1 last(_time) as prev_time by src_ip, dest_ip
+| eval time_delta=_time - prev_time
+| stats count, avg(time_delta) as avg_interval, stdev(time_delta) as jitter by src_ip, dest_ip`,
+        desc: "Calculates time deltas between HTTP requests using <code>streamstats</code> to mathematically prove automated C2 heartbeat beaconing (60s interval, low jitter).",
+        table: `<table><thead><tr><th>src_ip</th><th>dest_ip</th><th>count</th><th>avg_interval</th><th>jitter</th></tr></thead>
+        <tbody><tr><td>10.100.10.20</td><td>198.51.100.77</td><td>450</td><td>60.12s</td><td>±1.8s</td></tr></tbody></table>`
+      },
+      7: {
+        spl: `index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+| search Image="*\\vssadmin.exe" CommandLine="*delete*shadows*"
+| table _time, Computer, User, Image, CommandLine`,
+        desc: "Detects ransomware operators deleting Volume Shadow Copies to prevent backup recovery.",
+        table: `<table><thead><tr><th>_time</th><th>Computer</th><th>User</th><th>Image</th><th>CommandLine</th></tr></thead>
+        <tbody><tr><td>2026-08-18 10:55:00</td><td>FS-DATA-01</td><td>APEX\\svc_backup</td><td>...\\vssadmin.exe</td><td>vssadmin.exe delete shadows /all /quiet</td></tr></tbody></table>`
+      }
+    };
+
+    function runQuery(phaseNum) {
+      const q = queries[phaseNum];
+      document.getElementById('query-display').textContent = q.spl;
+      document.getElementById('query-desc').innerHTML = q.desc;
+      document.getElementById('table-results').innerHTML = q.table;
+    }
+
+    // Default load query 1
+    runQuery(1);
+  </script>
+</body>
+</html>

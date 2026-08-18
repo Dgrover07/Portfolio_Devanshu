@@ -346,10 +346,10 @@
 
   <!-- Project Category Filter Tags -->
   <div class="filter-tags reveal delay">
-    <button class="filter-tag active" data-filter="all">All Projects (3)</button>
-    <button class="filter-tag" data-filter="siem">SIEM & Monitoring</button>
-    <button class="filter-tag" data-filter="investigation">Threat Investigation</button>
+    <button class="filter-tag active" data-filter="all">All Projects (4)</button>
+    <button class="filter-tag" data-filter="siem">SIEM & Threat Hunting</button>
     <button class="filter-tag" data-filter="honeypot">Honeypots & Telemetry</button>
+    <button class="filter-tag" data-filter="investigation">Threat Investigation & OSINT</button>
   </div>
   
   <!-- Project Grid -->
@@ -385,10 +385,40 @@
       </div>
     </article>
 
-    <!-- Project 02: Home SIEM Lab -->
+    <!-- Project 02: Splunk Enterprise Incident Investigation (FLAGSHIP) -->
+    <article class="project card-spotlight" data-project="splunk-soc-incident-investigation" data-filter="siem">
+      <div class="project-header">
+        <small>02 · ENTERPRISE SIEM & THREAT HUNTING</small>
+        <span class="badge alert">ENTERPRISE IR // NIST SP 800-61</span>
+      </div>
+      <h3>Splunk SIEM Incident Investigation & SOC Threat Hunting: Operation BlackByte</h3>
+      <p>Conducted end-to-end incident response and threat hunting in Splunk Enterprise reconstructing an enterprise ransomware and data exfiltration campaign against Apex Global Financial (<code>apex-fin.corp</code>).</p>
+      <ul>
+        <li><strong>Phishing & In-Memory Execution:</strong> Traced weaponized Excel macro (<code>Invoice_Q3_9942.xlsm</code>) spawning hidden PowerShell download cradle pulling stage2 from C2 (<code>198.51.100.77</code>).</li>
+        <li><strong>Credential Dumping & Pivot:</strong> Correlated Sysmon Event ID 10 (GrantedAccess <code>0x1010</code>) detecting LSASS dump via <code>rundll32 comsvcs.dll</code> to compromise <code>APEX\svc_backup</code> and pivot to <code>FS-DATA-01</code> via PsExec.</li>
+        <li><strong>Exfiltration & Anti-Recovery:</strong> Detected 88.4 MB encrypted 7z staging exfiltration and intercepted <code>vssadmin.exe delete shadows /all /quiet</code> before ransomware payload triggered.</li>
+        <li><strong>Detection Engineering:</strong> Engineered production Splunk SPL correlation searches and Sigma rules mapped across NIST SP 800-61r2 and MITRE ATT&CK.</li>
+      </ul>
+      <div class="tags">
+        <span>Splunk Enterprise</span>
+        <span>Splunk SPL</span>
+        <span>Sysmon (Event 1/10/15)</span>
+        <span>Sigma Rules</span>
+        <span>NIST SP 800-61r2</span>
+        <span>MITRE ATT&CK</span>
+        <span>Active Directory</span>
+        <span>PsExec Triage</span>
+      </div>
+      <div class="project-actions">
+        <button class="btn primary btn-quick-view" data-modal="splunk-soc-incident-investigation">View Full Case Study ⚡</button>
+        <a class="project-link" href="splunk-soc-incident-investigation/dashboards/interactive_soc_viewer.html" target="_blank" rel="noopener noreferrer">Interactive SOC Dashboard ↗</a>
+      </div>
+    </article>
+
+    <!-- Project 03: Home SIEM Lab -->
     <article class="project card-spotlight" data-project="home-siem-lab" data-filter="siem">
       <div class="project-header">
-        <small>02 · SIEM & DETECTION LOGGING</small>
+        <small>03 · SIEM & DETECTION LOGGING</small>
         <span class="badge ok">LIVE LAB</span>
       </div>
       <h3>Home SIEM & Windows Monitoring Lab</h3>
@@ -412,10 +442,10 @@
       </div>
     </article>
 
-    <!-- Project 03: Phishing OSINT -->
+    <!-- Project 04: Phishing OSINT -->
     <article class="project card-spotlight" data-project="phishing-osint" data-filter="investigation">
       <div class="project-header">
-        <small>03 · THREAT INVESTIGATION & OSINT</small>
+        <small>04 · THREAT INVESTIGATION & OSINT</small>
         <span class="badge">ANALYSIS</span>
       </div>
       <h3>Phishing Email Investigation & OSINT</h3>

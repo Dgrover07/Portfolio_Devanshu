@@ -1,0 +1,45 @@
+-- ============================================================================
+-- OPERATION BLACKBYTE: SPLUNK SIEM INCIDENT INVESTIGATION
+-- Phase 3: Defense Evasion & Persistence
+-- MITRE ATT&CK: T1562.001 (Impair Defenses), T1053.005 (Scheduled Task), T1543 (Create System Process)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. Detect Tampering with Windows Defender Antivirus (Event ID 5001 & 5007)
+-- ----------------------------------------------------------------------------
+index=incident_lab (sourcetype="WinEventLog:Microsoft-Windows-Windows Defender/Operational" EventCode IN (5001, 5007))
+OR (sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1 CommandLine="*MpPreference*")
+| eval ActionTaken=case(
+    EventCode==5001, "Real-time Monitoring Disabled",
+    EventCode==5007, "Defender Configuration Changed (Exclusion Added)",
+    match(CommandLine, "(?i)DisableRealtimeMonitoring"), "Command: Disable Realtime Protection",
+    match(CommandLine, "(?i)ExclusionPath"), "Command: AV Exclusion Path Added",
+    1=1, "Other Defender Event"
+  )
+| table _time, Computer, User, EventCode, ActionTaken, CommandLine, Message
+| sort - _time;
+
+-- ----------------------------------------------------------------------------
+-- 2. Hunt for Malicious Scheduled Tasks (WinEventLog:Security EID 4698)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="WinEventLog:Security" EventCode=4698
+| rex field=Message "Task Name:\s+(?<TaskName>[^\r\n]+)"
+| rex field=Message "Task Content:\s+(?<TaskContent>[^\r\n]+)"
+| rex field=Message "Subject:\s+.*?Account Name:\s+(?<CreatorUser>[^\r\n]+)"
+| eval IsSuspicious=if(match(TaskContent, "(?i)(powershell|cmd|wscript|cscript|mshta|certutil|temp|appdata)"), "HIGH RISK", "Normal")
+| table _time, Computer, CreatorUser, TaskName, IsSuspicious, TaskContent
+| where IsSuspicious="HIGH RISK";
+
+-- ----------------------------------------------------------------------------
+-- 3. Correlate Task Creation via Sysmon Process Execution (`schtasks.exe`)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1 Image="*\\schtasks.exe"
+| rex field=CommandLine "(?i)/create\s+/tn\s+\"?(?<TaskName>[^\"]+)\"?\s+/tr\s+\"?(?<TaskCommand>[^\"]+)\"?\s+/sc\s+(?<ScheduleType>\w+)"
+| table _time, Computer, User, ParentImage, TaskName, ScheduleType, TaskCommand;
+
+-- ----------------------------------------------------------------------------
+-- 4. Detect Registry Run Key Persistence (Sysmon EID 12 & 13)
+-- ----------------------------------------------------------------------------
+index=incident_lab sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode IN (12, 13)
+| search TargetObject="*\\CurrentVersion\\Run*" OR TargetObject="*\\CurrentVersion\\RunOnce*"
+| table _time, Computer, User, Image, EventType, TargetObject, Details;
