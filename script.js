@@ -166,6 +166,85 @@ alert tcp any any -> $HOME_NET 3389 (
       'Elastic Common Schema (ECS) normalization is essential when aggregating telemetry from disparate sensors (Cowrie, Suricata, Dionaea) into a single Kibana dashboard.',
       'Suricata rules requiring exact byte offsets (depth/within) significantly reduce false-positive rates compared to broad string matching.'
     ]
+  },
+
+  'msc-cloud-ids-dissertation': {
+    id: 'msc-cloud-ids-dissertation',
+    badge: 'MSc RESEARCH // DISTINCTION LEVEL',
+    category: 'MSc RESEARCH DISSERTATION · UNIVERSITY OF GLOUCESTERSHIRE (2025)',
+    name: 'Enhancing Intrusion Detection Systems Using Artificial Intelligence in a Cloud Environment',
+    summary: 'Academic & empirical investigation of hybrid signature- and anomaly-based Intrusion Detection Systems (IDS) in AWS cloud environments using machine learning and Explainable AI (XAI).',
+    description: 'Investigated the trade-offs between deterministic signature-based NIDS (Suricata/Snort) and machine learning anomaly detectors (Random Forest, XGBoost, Deep Autoencoders) on cloud network telemetry (CIC-IDS2017 and AWS VPC Flow Logs). Engineered a two-stage hybrid cloud IDS architecture, evaluated false-positive mitigation techniques, implemented Explainable AI (SHAP/LIME) for SOC analyst triage, assessed resilience against adversarial ML evasion, and established privacy-by-design frameworks under UK GDPR Article 32.',
+    repo: 'https://github.com/Dgrover07/Portfolio_Devanshu',
+    tags: ['AWS Cloud', 'Machine Learning', 'Suricata NIDS', 'Explainable AI (SHAP)', 'AWS VPC Flow Logs', 'Adversarial ML', 'GDPR Compliance', 'Python (Scikit-Learn/PyTorch)'],
+    points: [
+      'Engineered a Two-Stage Hybrid Detection Pipeline: Fast-path deterministic Suricata signature filtering for known threats followed by an XGBoost/Autoencoder ensemble for zero-day behavioral anomalies.',
+      'False-Positive Reduction: Achieved 98.4% multi-class attack detection accuracy on high-velocity cloud flows, reducing false-positive alert volume by 72% compared to standalone anomaly models.',
+      'Explainable AI (XAI) for SOC Triage: Integrated SHAP (SHapley Additive exPlanations) to output exact feature attribution weights (e.g. packet inter-arrival jitter, SYN/ACK ratios, flow byte duration) per alert.',
+      'Adversarial ML Evasion Defense: Evaluated model susceptibility against Fast Gradient Sign Method (FGSM) and packet timing perturbations; applied defensive distillation and feature squeezing to retain >92% accuracy under active evasion.',
+      'Cloud-Native AWS Deployment Model: Architected an elastic detection infrastructure leveraging AWS VPC Traffic Mirroring, Kinesis Data Streams, SageMaker inference endpoints, and OpenSearch for unified SOC visualization.',
+      'Privacy & UK GDPR Article 32 Compliance: Formulated strict data governance protocols implementing automated payload pseudonymization and ephemeral log retention for packet captures.'
+    ],
+    tech: ['AWS Cloud (EC2, VPC, Kinesis, CloudWatch)', 'Python 3.11', 'Scikit-Learn', 'XGBoost', 'PyTorch (Autoencoders)', 'SHAP & LIME (XAI)', 'Suricata NIDS', 'CIC-IDS2017 Benchmark', 'UK GDPR & ISO 27001'],
+    ruleType: 'TWO-STAGE HYBRID DETECTION & SHAP EXPLAINABILITY ENGINE (Python)',
+    ruleCode: `import numpy as np
+import xgboost as xgb
+import shap
+
+class CloudHybridIDS:
+    """
+    Two-Stage Hybrid Cloud Intrusion Detection & Explainability Engine
+    Stage 1: Suricata Signature Match (Deterministic Fast-Path)
+    Stage 2: XGBoost Anomaly Classifier + SHAP Feature Attribution
+    """
+    def __init__(self, model_path: str):
+        self.anomaly_model = xgb.Booster()
+        self.anomaly_model.load_model(model_path)
+        self.explainer = shap.TreeExplainer(self.anomaly_model)
+        self.feature_names = [
+            'flow_duration', 'total_fwd_packets', 'total_bwd_packets',
+            'flow_bytes_s', 'flow_packets_s', 'syn_flag_count',
+            'rst_flag_count', 'ack_flag_count', 'pkt_size_avg'
+        ]
+
+    def evaluate_flow(self, flow_features: np.ndarray, signature_matched: bool):
+        if signature_matched:
+            return {"verdict": "MALICIOUS", "stage": "SURICATA_SIGNATURE", "confidence": 1.0}
+        
+        # Stage 2: Machine Learning Anomaly Inference
+        dmatrix = xgb.DMatrix(flow_features, feature_names=self.feature_names)
+        anomaly_prob = float(self.anomaly_model.predict(dmatrix)[0])
+        
+        if anomaly_prob >= 0.75:
+            # Generate Explainable AI (XAI) feature importance for SOC analyst
+            shap_values = self.explainer.shap_values(flow_features)
+            top_features = sorted(zip(self.feature_names, shap_values[0]), key=lambda x: abs(x[1]), reverse=True)[:3]
+            return {
+                "verdict": "ANOMALOUS",
+                "stage": "AI_ANOMALY_ENGINE",
+                "anomaly_score": round(anomaly_prob, 4),
+                "top_attributions": {feat: round(val, 3) for feat, val in top_features}
+            }
+        return {"verdict": "BENIGN", "anomaly_score": round(anomaly_prob, 4)}`,
+    mitreTactics: [
+      { id: 'T1595.002', name: 'Vulnerability Scanning (Cloud Probes)', phase: 'Reconnaissance' },
+      { id: 'T1498.001', name: 'Direct Network Flooding (DDoS/SYN Floods)', phase: 'Impact' },
+      { id: 'T1071.001', name: 'Web Protocols (HTTP/S Anomaly Beaconing)', phase: 'Command and Control' },
+      { id: 'T1562.001', name: 'Impair Defenses (Adversarial Perturbation / Evasion)', phase: 'Defense Evasion' }
+    ],
+    topology: [
+      { step: '01. Telemetry Mirror', title: 'AWS VPC Traffic Mirror', desc: 'Captures raw VPC ENI packet streams & VPC Flow Logs' },
+      { step: '02. Stream Pipeline', title: 'Amazon Kinesis Streams', desc: 'High-throughput stream buffering and batch normalization' },
+      { step: '03. Stage 1 NIDS', title: 'Suricata Fast-Path', desc: 'Deterministic signature matching for known exploits' },
+      { step: '04. Stage 2 AI/ML', title: 'XGBoost & Autoencoder', desc: 'Anomaly classification on un-matched high-variance flows' },
+      { step: '05. Explainability', title: 'SHAP / LIME & OpenSearch', desc: 'Actionable feature attribution graphs for SOC analysts' }
+    ],
+    takeaways: [
+      'Standalone AI anomaly detectors generate unacceptable false-positive rates in dynamic cloud environments; combining deterministic signature engines with ML anomaly classifiers reduces false alarms by over 70%.',
+      'Explainable AI (SHAP/LIME) is essential for SOC operationalization; without feature attribution, analysts lack confidence to act on AI-generated alerts.',
+      'Adversarial machine learning is a real threat to cloud defense; models must incorporate adversarial perturbation training and feature squeezing to prevent blind spots.',
+      'Privacy-by-design (GDPR Article 32) must be integrated into network capture pipelines via automated payload pseudonymization.'
+    ]
   }
 };
 
@@ -411,15 +490,22 @@ function setupTerminal() {
 
     projects: () => `
 <div class="term-res">
-  <p class="term-title-cyan">Hands-On Security Projects:</p>
+  <p class="term-title-cyan">Hands-On Security Projects & Research:</p>
   <ol class="term-list">
     <li><a href="#projects" class="term-link">[01] T-Pot Multi-Honeypot SOC Assessment</a> — Suricata NIDS, Elastic ECS, 141 Attacks</li>
     <li><a href="#projects" class="term-link">[02] Splunk Enterprise IR (Operation BlackByte)</a> — Splunk SPL, Sysmon 1/10/15, NIST SP 800-61</li>
-    <li><a href="#projects" class="term-link">[03] Home SIEM & Windows Monitoring Lab</a> — Splunk, Sysmon XML, Kali Linux</li>
-    <li><a href="#projects" class="term-link">[04] Phishing Email Investigation & OSINT</a> — Header Triage, CyberChef, VirusTotal</li>
+    <li><a href="#projects" class="term-link">[03] Phishing Email Investigation & OSINT</a> — Header Triage, CyberChef, VirusTotal</li>
+    <li><a href="#projects" class="term-link">[MSc] Enhancing Cloud IDS with AI</a> — AWS VPC Mirroring, XGBoost/Autoencoders, SHAP XAI</li>
   </ol>
   <p class="term-dim">Click any project above or scroll down to the Projects section to inspect.</p>
 </div>`,
+
+    dissertation: () => {
+      setTimeout(() => window.openProjectModal?.('msc-cloud-ids-dissertation'), 300);
+      return `<div class="term-res"><p class="term-title-cyan">🎓 Opening MSc Research Dissertation Case Study (Cloud IDS & AI)...</p></div>`;
+    },
+
+    research: () => commands.dissertation(),
 
     splunk: () => `
 <div class="term-res">
@@ -965,6 +1051,7 @@ function setupCommandPalette() {
     { label: 'Inspect T-Pot Multi-Honeypot SOC Assessment (Flagship)', action: () => window.openProjectModal?.('tpot-soc-assessment'), cat: 'Project' },
     { label: 'Inspect Splunk SIEM Incident Investigation: Operation BlackByte (Flagship)', action: () => window.openProjectModal?.('splunk-soc-incident-investigation'), cat: 'Project' },
     { label: 'Inspect Phishing Email Investigation & OSINT', action: () => window.openProjectModal?.('phishing-osint'), cat: 'Project' },
+    { label: 'Inspect MSc Research Dissertation: Cloud IDS & AI (Research)', action: () => window.openProjectModal?.('msc-cloud-ids-dissertation'), cat: 'Research' },
     { label: 'Copy Email Address (groverdevanshu623@gmail.com)', action: () => copyToClipboard('groverdevanshu623@gmail.com', 'Copied email to clipboard!'), cat: 'Contact' },
     { label: 'Copy Phone Number (+44 7586 395777)', action: () => copyToClipboard('+44 7586 395777', 'Copied phone number to clipboard!'), cat: 'Contact' },
     { label: 'Open LinkedIn Profile ↗', action: () => window.open('https://www.linkedin.com/in/devanshugrover-22b097208', '_blank'), cat: 'Social' },
@@ -1270,7 +1357,7 @@ function renderProjectDetailPage() {
   }
 
   // Populate Topology Diagram
-  const topoBox = document.getElementById('modal-topology-box');
+  const topoBox = document.getElementById('project-topology-box') || document.getElementById('modal-topology-box');
   if (topoBox && project.topology) {
     topoBox.innerHTML = `
       <div class="topo-flow">

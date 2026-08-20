@@ -1161,6 +1161,16 @@ nav a:hover::after, nav a.active::after {
   border-radius: 4px;
 }
 
+.dissertation-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(30, 41, 59, 0.7);
+}
+
 /* ═══════════════════════════════════════
    SOC TELEMETRY INVESTIGATOR WIDGET
    ═══════════════════════════════════════ */
